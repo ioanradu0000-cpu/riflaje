@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #f6f4ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes image-reveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 8px);
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 8px);
+    transform: scale(1);
+  }
+}
+
+@keyframes comparison-swap {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-page-in {
+  animation: page-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-card-in {
+  animation: card-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-drop-in {
+  animation: drop-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-float-slow {
+  animation:
+    fade-up 760ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    float-slow 6s ease-in-out 900ms infinite;
+}
+
+.animate-image-reveal {
+  animation: image-reveal 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-comparison-swap {
+  animation: comparison-swap 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.product-tile {
+  transform-origin: center bottom;
+}
+
+.product-tile:focus-visible {
+  outline: 3px solid #7a4d2b;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}

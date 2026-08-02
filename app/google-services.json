@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "663880429619",
+    "project_id": "revved-14241",
+    "storage_bucket": "revved-14241.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:663880429619:android:78efda798733fb00cd7346",
+        "android_client_info": {
+          "package_name": "ro.pcforge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt2y593y86sEaOkzyxdikrEjYKQhOHYbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

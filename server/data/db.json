@@ -1,0 +1,755 @@
+{
+  "settings": {
+    "siteTitle": "DesignRiflaje",
+    "logo": "https://i.imgur.com/yDSAyAH.png",
+    "showSiteTitle": false,
+    "heroTitle": "DesignRiflaje",
+    "heroDescription": "La Design Riflaje, credem ca fiecare perete poate deveni un element de design. Descopera colectia noastra de riflaje decorative cu finisaj premium, create pentru a adauga eleganta, stil si personalitate oricarui spatiu.",
+    "heroImage": "https://lovedeco.ro/wp-content/uploads/2022/03/riflaje-decorative-poza-principala.jpeg",
+    "heroImages": [
+      "https://lovedeco.ro/wp-content/uploads/2022/03/riflaje-decorative-poza-principala.jpeg",
+      "https://s13emagst.akamaized.net/products/49093/49092829/images/res_abef994dfeab29aeadc9a490174cbb47.jpg",
+      "https://fiica.ro/cdn/shop/products/LINEA_S_B_a_106349a9-83b8-4897-a2bd-a03d80891a09.jpg?v=1650015063&width=1080",
+      "https://gomagcdn.ro/domains/bortisimpex.ro/files/product/large/set-mobila-living-suspendata-prindere-perete-cu-riflaj-inclus-usi-deschidere-prin-apasare-vitrina-cu-led-stejar-artisan-negru-lamelele-casmir-bej-220-718701.jpg"
+    ],
+    "email": "exemplu@gmail.com",
+    "phone": "+40 745 046 318",
+    "whatsapp": "+40 745 046 318",
+    "bankBeneficiary": "SC exemplu SRL",
+    "bankIban": "RO00BANK0000000000000000",
+    "bankName": "Banca Exemplu",
+    "bankInstructions": "Te rugam sa folosesti numarul comenzii la detaliile platii.",
+    "freeShippingMessage": "Livrare gratuita in Iasi.",
+    "shippingCostPerItem": 10
+  },
+  "products": [
+    {
+      "id": "prod-1785620740344",
+      "title": "Riflaj Antique Walnut 18/145/2800MM",
+      "price": "129,00 lei   TVA inclus",
+      "description": "Riflajul decorativ Antique Walnut aduce un plus de eleganță și dinamism oricărui spațiu, datorită designului său unic, cu forme curbe și suprafețe concave. Realizat din materiale premium, acest riflaj combină estetica modernă cu funcționalitatea, fiind ideal pentru decorarea pereților sau a tavanului. Textura sa distinctivă creează un joc subtil de lumini și umbre, oferind un efect vizual captivant. Potrivit pentru spații rezidențiale sau comerciale, panoul decorativ transformă orice interior într-un ambient rafinat și sofisticat.\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Antique-Walnut-700x435.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Antique-Walnut-700x435.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 95,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/q4EmUPj.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/wDfcPVN.jpeg"
+      ],
+      "panelWidthMm": 145,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785620810109",
+      "title": "Riflaj Antique Walnut Black 18/145/2800MM",
+      "price": "129,00 lei   TVA inclus",
+      "description": "Riflajul decorativ Antique Walnut Black aduce un plus de eleganță și dinamism oricărui spațiu, datorită designului său unic, cu forme curbe și suprafețe concave. Realizat din materiale premium, acest riflaj combină estetica modernă cu funcționalitatea, fiind ideal pentru decorarea pereților sau a tavanului. Textura sa distinctivă creează un joc subtil de lumini și umbre, oferind un efect vizual captivant. Potrivit pentru spații rezidențiale sau comerciale, panoul decorativ transformă orice interior într-un ambient rafinat și sofisticat.\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Antique-Walnut-Black-700x422.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Antique-Walnut-Black-700x422.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 85,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/F3e8myG.jpeg"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 145,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785620850984",
+      "title": "Riflaj Antique Walnut I 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Antique Walnut îmbină modelele tradiționale și contemporane, evidențiind frumusețea fibrei lemnoase și atenția la sursele sustenabile de lemn. Acest produs aduce o eleganță naturală spațiilor tale, punând în valoare textura autentică a lemnului.\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132849-700x465.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132849-700x465.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-3-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/TqGRAPr.jpeg"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785620911176",
+      "title": "Riflaj Asos 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Asos îmbină modelele tradiționale și contemporane, evidențiind frumusețea fibrei lemnoase și atenția la sursele sustenabile de lemn. Acest produs aduce o eleganță naturală spațiilor tale, punând în valoare textura autentică a lemnului.\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Asos-scaled-3-700x439.jpg.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Asos-scaled-3-700x439.jpg.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-5-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 95,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/tkUns5v.jpeg"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785620947477",
+      "title": "Riflaj Asos Large 18/118/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Riflajul Asos din colecția Large aduce un design impunător și elegant, ideal pentru decorarea pereților sau tavanelor. Cu o textură autentică de stejar și dimensiuni care accentuează prezența sa în orice spațiu, acest model este perfect pentru interioare moderne și sofisticate. Finisajul de înaltă calitate asigură durabilitate și un aspect premium, transformând fiecare ambient într-un decor deosebit. Asos este alegerea ideală pentru cei care caută un echilibru între funcționalitate și un design simplu.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Asos-700x433.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Asos-700x433.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 95,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/yOSDcLG.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 118,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621041038",
+      "title": "Riflaj Iceland Blue 18/118/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Riflajul Iceland Blue din colecția Round aduce o notă de calm și rafinament oricărui spațiu. Cu un finisaj modern și suprafețe rotunjite, acest model este ideal pentru a crea un decor sofisticat și liniștitor. Culoarea sa albastră subtilă se integrează perfect în interioare contemporane, oferind un aer proaspăt și elegant. Fabricat din materiale durabile, panoul decorativ Iceland Blue transformă pereții sau tavanele într-un punct de atracție estetică.\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-10-183924-700x433.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-10-183924-700x433.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/WhatsApp-Image-2024-11-12-at-15.22.49-1-700x312.jpeg.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 0,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/wz4HjyO.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 118,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621087951",
+      "title": "Riflaj Light Oak Black 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Light Oak Black îmbină modelele tradiționale și contemporane, evidențiind frumusețea fibrei lemnoase și atenția la sursele sustenabile de lemn. Acest produs aduce o eleganță naturală spațiilor tale, punând în valoare textura autentică a lemnului.\nDimensiuni 18 × 121 × 2800 mm\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132800-700x467.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132800-700x467.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-7-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/nVu2PwD.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621121603",
+      "title": "Riflaj Noce Nigra 18/121/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Noce Nigra îmbină modelele tradiționale și contemporane. Acest produs aduce o eleganță autentică spațiilor tale, punând în valoare estetica modernă.\nDimensiuni: 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132913-700x463.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132913-700x463.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/KVMAFQy.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621187045",
+      "title": "Riflaj Sapphire Oak 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Sapphire Oak îmbină modelele tradiționale și contemporane. Acest produs aduce o eleganță autentică spațiilor tale, punând în valoare estetica modernă\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132826-700x466.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-09-132826-700x466.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/2HHHb9D.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621227196",
+      "title": "Riflaj Soft Touch Anthracite 18/121/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Soft Touch Anthracite îmbină modelele tradiționale și contemporane. Acest produs aduce o eleganță autentică spațiilor tale, punând în valoare estetica modernă.\nDimensiuni: 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Anthracite-700x422.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Anthracite-700x422.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 95,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/biIk1IO.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621262681",
+      "title": "Riflaj Soft Touch Black 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Soft Touch Black îmbină modelele tradiționale și contemporane. Acest produs aduce o eleganță autentică spațiilor tale, punând în valoare estetica modernă\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Black-700x435.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Black-700x435.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-1-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 75,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/ZM4LqKO.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621294576",
+      "title": "Riflaj Soft Touch Black 18/145/2800MM",
+      "price": "139,00 lei   TVA inclus",
+      "description": "Riflajul decorativ Soft Touch Black aduce un plus de eleganță și dinamism oricărui spațiu, datorită designului său unic, cu forme curbe și suprafețe concave. Realizat din materiale premium, acest riflaj combină estetica modernă cu funcționalitatea, fiind ideal pentru decorarea pereților sau a tavanului. Textura sa distinctivă creează un joc subtil de lumini și umbre, oferind un efect vizual captivant. Potrivit pentru spații rezidențiale sau comerciale, panoul decorativ transformă orice interior într-un ambient rafinat și sofisticat.\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Black-1-1-700x431.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Soft-Touch-Black-1-1-700x431.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 0,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/GxQyVGB.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 145,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621357582",
+      "title": "Riflaj Teak Black 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Teak Black îmbină modelele tradiționale și contemporane, evidențiind frumusețea fibrei lemnoase și atenția la sursele sustenabile de lemn. Acest produs aduce o eleganță naturală spațiilor tale, punând în valoare textura autentică a lemnului.\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Teak-Black-700x437.jpg.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Teak-Black-700x437.jpg.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-4-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 0,
+          "y": 40
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/DlTnfZ2.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621388390",
+      "title": "Riflaj Teak Black 18/145/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Riflajul decorativ Teak Black aduce un plus de eleganță și dinamism oricărui spațiu, datorită designului său unic, cu forme curbe și suprafețe concave. Realizat din materiale premium, acest riflaj combină estetica modernă cu funcționalitatea, fiind ideal pentru decorarea pereților sau a tavanului. Textura sa distinctivă creează un joc subtil de lumini și umbre, oferind un efect vizual captivant. Potrivit pentru spații rezidențiale sau comerciale, panoul decorativ transformă orice interior într-un ambient rafinat și sofisticat.\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Teak-Black-700x424.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Teak-Black-700x424.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/zasZ5sD.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 145,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621417259",
+      "title": "Riflaj Water Green 18/118/2800MM",
+      "price": "119,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Concav, riflajul decorativ Water Green aduce un plus de eleganță și dinamism oricărui spațiu, datorită designului său unic, cu forme curbe și suprafețe concave. Realizat din materiale premium, acest riflaj combină estetica modernă cu funcționalitatea, fiind ideal pentru decorarea pereților sau a tavanului. Textura sa distinctivă creează un joc subtil de lumini și umbre, oferind un efect vizual captivant. Potrivit pentru spații rezidențiale sau comerciale, riflajul Concav transformă orice interior într-un ambient rafinat și sofisticat.\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Water-Green.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Water-Green.png.webp"
+      ],
+      "imageZooms": [
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 5
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/Z0qIG0g.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 118,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    },
+    {
+      "id": "prod-1785621453127",
+      "title": "Riflaj Wenge 18/121/2800MM",
+      "price": "109,00 lei   TVA inclus",
+      "description": "Parte din colecția noastră Clasic, riflajul decorativ Wenge îmbină modelele tradiționale și contemporane, evidențiind frumusețea fibrei lemnoase și atenția la sursele sustenabile de lemn. Acest produs aduce o eleganță naturală spațiilor tale, punând în valoare textura autentică a lemnului.\nDimensiuni 18 × 121 × 2800 mm\n\nCostul de livrare variază în funcție de dimensiunea și volumul comenzii.\n\n📦 Tariful orientativ este de aproximativ 10 lei / bucată, în funcție de destinație și cantitate.\nPentru comenzile de volum mare, costul transportului poate fi ajustat în funcție de greutate, dimensiuni și kilometraj.",
+      "image": "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-10-185111-700x463.png.webp",
+      "images": [
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2026-01-10-185111-700x463.png.webp",
+        "https://solixvent.com/wp-content/uploads/2026/02/Screenshot-2024-09-06-192239-6-700x289.png.webp"
+      ],
+      "imageZooms": [
+        100,
+        100
+      ],
+      "imagePositions": [
+        {
+          "x": 50,
+          "y": 50
+        },
+        {
+          "x": 50,
+          "y": 50
+        }
+      ],
+      "riflajeImages": [
+        "https://i.imgur.com/jrgEk4u.png"
+      ],
+      "noRiflajeImages": [
+        "https://i.imgur.com/VuRecwc.jpeg"
+      ],
+      "panelWidthMm": 121,
+      "panelLengthMm": 2800,
+      "available": true,
+      "active": true
+    }
+  ],
+  "collections": [
+    {
+      "id": "col-1785621903507",
+      "title": "Clasic",
+      "description": "Colecția noastră de lambriuri din lemn Clasic constă din modele tradiționale și contemporane ale fibrei lemnoase și acordă o atenție deosebită sursei de reproducere a lemnului.\nAm creat o colecție ecologică axată pe originea lemnului natural și pe modul în care mediul natural poate fi transpus în locuințele care folosesc o combinație de materiale, dar în care se dorește conexiune cu mediul exterior în confortul casei dumneavoastră.",
+      "image": "https://i.imgur.com/QsNMaGF.png",
+      "images": [
+        "https://i.imgur.com/QsNMaGF.png"
+      ],
+      "productIds": [
+        "prod-1785620740344",
+        "prod-1785620911176",
+        "prod-1785621121603",
+        "prod-1785621087951",
+        "prod-1785621187045",
+        "prod-1785621227196",
+        "prod-1785621262681",
+        "prod-1785621357582",
+        "prod-1785621453127"
+      ],
+      "active": true
+    },
+    {
+      "id": "col-1785622600826",
+      "title": "Riflaje Concav",
+      "description": "Designul riflajelor noastre Concav va transforma spațiul dumneavoastră de locuit într-o experiență geometrică de artă contemporană, pentru a evidenția accentele asimetrice care dau viață camerei dumneavoastră.\nIndiferent dacă sunteți un minimalist în materie de estetică sau un maximalist în materie de spectacol vizual… lambriurile noastre Concav vor atrage atenția la cele mai fine detalii din spațiul dumneavoastră de locuit,\nfără a umbri subtilitatea aspirațiilor dumneavoastră în materie de design.",
+      "image": "https://i.imgur.com/kATsWNG.png",
+      "images": [
+        "https://i.imgur.com/kATsWNG.png"
+      ],
+      "productIds": [
+        "prod-1785620740344",
+        "prod-1785620810109",
+        "prod-1785621294576",
+        "prod-1785621357582",
+        "prod-1785621417259"
+      ],
+      "active": true
+    },
+    {
+      "id": "col-1785622916001",
+      "title": "Riflaje Large",
+      "description": "Colecția noastră de lambriuri din lemn Large constă din modele tradiționale și contemporane ale fibrei lemnoase și acordă o atenție deosebită sursei de reproducere a lemnului.\nAm creat o colecție ecologică axată pe originea lemnului natural și pe modul în care mediul natural poate fi transpus în locuințele care folosesc o combinație de materiale, dar în care se dorește conexiune cu mediul exterior în confortul casei dumneavoastră.",
+      "image": "https://i.imgur.com/oVLUXD7.jpeg",
+      "images": [
+        "https://i.imgur.com/oVLUXD7.jpeg"
+      ],
+      "productIds": [
+        "prod-1785620810109",
+        "prod-1785620947477",
+        "prod-1785621357582"
+      ],
+      "active": true
+    }
+  ],
+  "orders": [
+    {
+      "id": "order-1785613002200",
+      "orderNumber": "DR-20260801-002200",
+      "createdAt": "2026-08-01T19:36:42.200Z",
+      "customer": {
+        "fullName": "test etst",
+        "phone": "0758413450",
+        "county": "iasi",
+        "locality": "Iași",
+        "address": "Isaiia Teodorescu Nr 54",
+        "postalCode": "707282",
+        "notes": ""
+      },
+      "items": [
+        {
+          "productId": "prod-1785523170278",
+          "title": "Riflaj Antique Walnut I 18/121/2800MM",
+          "quantity": 5,
+          "unitPrice": "109,00 lei   TVA inclus",
+          "unitPriceCents": 10900,
+          "subtotalCents": 54500,
+          "subtotal": "545,00 RON"
+        }
+      ],
+      "quantityTotal": 5,
+      "subtotalCents": 54500,
+      "shippingCents": 0,
+      "totalCents": 54500,
+      "subtotal": "545,00 RON",
+      "shipping": "0,00 RON",
+      "total": "545,00 RON",
+      "paymentMethod": "Transfer bancar",
+      "paymentStatus": "Anulata",
+      "orderStatus": "Anulata",
+      "internalNotes": ""
+    },
+    {
+      "id": "order-1785612685181",
+      "orderNumber": "DR-20260801-685181",
+      "createdAt": "2026-08-01T19:31:25.181Z",
+      "customer": {
+        "fullName": "Client Test Cluj",
+        "phone": "0734567890",
+        "county": "Cluj",
+        "locality": "Cluj-Napoca",
+        "address": "Strada Test 7",
+        "postalCode": "",
+        "notes": "Comanda demo Cluj"
+      },
+      "items": [
+        {
+          "productId": "prod-1785523170278",
+          "title": "Riflaj Antique Walnut I 18/121/2800MM",
+          "quantity": 7,
+          "unitPrice": "109,00 lei   TVA inclus",
+          "unitPriceCents": 10900,
+          "subtotalCents": 76300,
+          "subtotal": "763,00 RON"
+        }
+      ],
+      "quantityTotal": 7,
+      "subtotalCents": 76300,
+      "shippingCents": 7000,
+      "totalCents": 83300,
+      "subtotal": "763,00 RON",
+      "shipping": "70,00 RON",
+      "total": "833,00 RON",
+      "paymentMethod": "Transfer bancar",
+      "paymentStatus": "Anulata",
+      "orderStatus": "Anulata",
+      "internalNotes": ""
+    },
+    {
+      "id": "order-1785612633299",
+      "orderNumber": "DR-20260801-633299",
+      "createdAt": "2026-08-01T19:30:33.299Z",
+      "customer": {
+        "fullName": "Client Test Bucuresti",
+        "phone": "0723456789",
+        "county": "Bucuresti",
+        "locality": "Bucuresti",
+        "address": "Strada Test 2",
+        "postalCode": "010101",
+        "notes": "Comanda demo Bucuresti"
+      },
+      "items": [
+        {
+          "productId": "prod-1785523170278",
+          "title": "Riflaj Antique Walnut I 18/121/2800MM",
+          "quantity": 2,
+          "unitPrice": "109,00 lei   TVA inclus",
+          "unitPriceCents": 10900,
+          "subtotalCents": 21800,
+          "subtotal": "218,00 RON"
+        },
+        {
+          "productId": "prod-1785523226886",
+          "title": "Riflaj Asos 18/121/2800MM",
+          "quantity": 1,
+          "unitPrice": "109,00 lei   TVA inclus",
+          "unitPriceCents": 10900,
+          "subtotalCents": 10900,
+          "subtotal": "109,00 RON"
+        }
+      ],
+      "quantityTotal": 3,
+      "subtotalCents": 32700,
+      "shippingCents": 3000,
+      "totalCents": 35700,
+      "subtotal": "327,00 RON",
+      "shipping": "30,00 RON",
+      "total": "357,00 RON",
+      "paymentMethod": "Transfer bancar",
+      "paymentStatus": "Anulata",
+      "orderStatus": "Anulata",
+      "internalNotes": "Plata confirmata in test."
+    },
+    {
+      "id": "order-1785612633295",
+      "orderNumber": "DR-20260801-633295",
+      "createdAt": "2026-08-01T19:30:33.295Z",
+      "customer": {
+        "fullName": "Client Test Iasi",
+        "phone": "0712345678",
+        "county": "Iasi",
+        "locality": "Municipiul Iasi",
+        "address": "Strada Test 1",
+        "postalCode": "",
+        "notes": "Comanda demo Iasi"
+      },
+      "items": [
+        {
+          "productId": "prod-1785523170278",
+          "title": "Riflaj Antique Walnut I 18/121/2800MM",
+          "quantity": 3,
+          "unitPrice": "109,00 lei   TVA inclus",
+          "unitPriceCents": 10900,
+          "subtotalCents": 32700,
+          "subtotal": "327,00 RON"
+        }
+      ],
+      "quantityTotal": 3,
+      "subtotalCents": 32700,
+      "shippingCents": 0,
+      "totalCents": 32700,
+      "subtotal": "327,00 RON",
+      "shipping": "0,00 RON",
+      "total": "327,00 RON",
+      "paymentMethod": "Transfer bancar",
+      "paymentStatus": "Anulata",
+      "orderStatus": "Anulata",
+      "internalNotes": ""
+    }
+  ]
+}
