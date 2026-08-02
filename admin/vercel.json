@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "installCommand": "npm install --include=optional",
+  "installCommand": "npm install --include=optional --no-audit",
   "outputDirectory": "dist",
   "framework": "vite"
 }
