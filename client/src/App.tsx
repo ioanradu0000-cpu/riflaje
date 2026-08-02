@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  ChevronDown,
   Clipboard,
   Mail,
   Menu,
@@ -13,7 +14,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 
 type ImagePosition = {
   x: number
@@ -310,6 +311,58 @@ function ProductRiflajeComparison({ product }: { product: Product }) {
   )
 }
 
+function MobileExpandablePanel({
+  eyebrow,
+  title,
+  children,
+  defaultOpen = false,
+}: {
+  eyebrow?: string
+  title: string
+  children: ReactNode
+  defaultOpen?: boolean
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <section className="rounded-lg border border-[#ded7cb] bg-white p-5 shadow-sm">
+      <div className="hidden sm:block">
+        {eyebrow && (
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">{eyebrow}</p>
+        )}
+        <h2 className="mt-1 text-2xl font-semibold">{title}</h2>
+      </div>
+
+      <button
+        aria-expanded={open}
+        className="mobile-disclosure-trigger flex w-full items-center justify-between gap-4 text-left sm:hidden"
+        onClick={() => setOpen((current) => !current)}
+        type="button"
+      >
+        <div>
+          {eyebrow && (
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">{eyebrow}</p>
+          )}
+          <h2 className="mt-1 text-xl font-semibold">{title}</h2>
+        </div>
+        <span
+          className={`grid size-10 shrink-0 place-items-center rounded-full border border-[#ded7cb] bg-[#f6f4ef] text-[#211c16] transition-transform duration-300 ${
+            open ? 'rotate-180' : ''
+          }`}
+        >
+          <ChevronDown className="size-5" aria-hidden="true" />
+        </span>
+      </button>
+
+      <div className={`mobile-disclosure-content ${open ? 'is-open' : ''} sm:mt-5 sm:!grid-rows-[1fr] sm:!opacity-100`}>
+        <div className="overflow-hidden">
+          <div className="pt-4 sm:pt-0">{children}</div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ProductWallCalculator({
   product,
   onAddQuantity,
@@ -339,20 +392,12 @@ function ProductWallCalculator({
   }
 
   return (
-    <section className="mt-8 rounded-lg border border-[#ded7cb] bg-white p-5 shadow-sm">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">
-            Calculator
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold">Cate riflaje trebuie sa comanzi</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#665d52]">
+    <MobileExpandablePanel eyebrow="Calculator" title="Cate riflaje trebuie sa comanzi">
+      <p className="max-w-2xl text-sm leading-6 text-[#665d52]">
             Introdu dimensiunea peretelui. Calculul foloseste dimensiunea produsului:
-            {' '}
-            <strong className="text-[#211c16]">{panelWidthMm} x {panelLengthMm} mm</strong>.
-          </p>
-        </div>
-      </div>
+        {' '}
+        <strong className="text-[#211c16]">{panelWidthMm} x {panelLengthMm} mm</strong>.
+      </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_280px]">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -415,7 +460,7 @@ function ProductWallCalculator({
       <p className="mt-4 text-xs leading-5 text-[#81786c]">
         Estimarea presupune montaj vertical si folosirea resturilor taiate pe inaltime. Nu include pierderi pentru debitare, colturi sau rezerve.
       </p>
-    </section>
+    </MobileExpandablePanel>
   )
 }
 
@@ -1015,10 +1060,11 @@ function App() {
                   </div>
 
                   <div className="mt-6">
-                    <h2 className="text-lg font-semibold">Descriere produs</h2>
-                    <p className="mt-3 whitespace-pre-line text-lg leading-8 text-[#665d52]">
-                      {selectedProduct.description}
-                    </p>
+                    <MobileExpandablePanel eyebrow="Detalii" title="Descriere produs">
+                      <p className="whitespace-pre-line text-lg leading-8 text-[#665d52]">
+                        {selectedProduct.description}
+                      </p>
+                    </MobileExpandablePanel>
                   </div>
 
                   {selectedProduct.available ? (
