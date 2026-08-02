@@ -48,11 +48,11 @@ const cookieSecure =
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || isAllowedOrigin(origin)) {
         return callback(null, true)
       }
 
-      return callback(new Error(`Origin not allowed by CORS: ${origin}`))
+      return callback(null, false)
     },
     credentials: true,
   }),
@@ -138,6 +138,23 @@ function normalizeImageZooms(zooms, count) {
     const zoom = Number(source[index] ?? 100)
     return Number.isFinite(zoom) ? Math.min(220, Math.max(40, Math.round(zoom))) : 100
   })
+}
+
+function isAllowedOrigin(origin) {
+  return allowedOrigins.some((pattern) => matchesOriginPattern(origin, pattern))
+}
+
+function matchesOriginPattern(origin, pattern) {
+  if (origin === pattern) {
+    return true
+  }
+
+  if (!pattern.includes('*')) {
+    return false
+  }
+
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')
+  return new RegExp(`^${escaped}$`).test(origin)
 }
 
 function normalizeImagePositions(positions, count) {
