@@ -29,10 +29,31 @@ const orderStatuses = [
   'Finalizata',
   'Anulata',
 ]
+const defaultOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+]
+const configuredOrigins = String(process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])]
+const cookieSameSite =
+  process.env.COOKIE_SAME_SITE || (process.env.NODE_ENV === 'production' ? 'none' : 'lax')
+const cookieSecure =
+  process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production'
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+
+      return callback(new Error(`Origin not allowed by CORS: ${origin}`))
+    },
     credentials: true,
   }),
 )
@@ -246,8 +267,8 @@ function createToken() {
 function setAuthCookie(res, token) {
   res.cookie(authCookieName, token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: cookieSameSite,
+    secure: cookieSecure,
     maxAge: 8 * 60 * 60 * 1000,
   })
 }
