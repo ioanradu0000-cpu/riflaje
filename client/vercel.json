@@ -17,6 +17,14 @@
       "destination": "/"
     },
     {
+      "source": "/cerere-oferta",
+      "destination": "/"
+    },
+    {
+      "source": "/colectii-riflaje",
+      "destination": "/"
+    },
+    {
       "source": "/colectii/(.*)",
       "destination": "/"
     },

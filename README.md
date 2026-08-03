@@ -113,6 +113,8 @@ Intra in admin panel, apoi:
 - modifici `URL site public`, `SEO title`, `SEO description` si `SEO image URL` din `Setari` pentru titlul paginii, descrierea din rezultate si preview-urile cand linkul este distribuit
 - poti seta emailul public de contact in `Setari`; el poate fi folosit si ca destinatar implicit pentru notificari daca nu setezi `NOTIFICATION_EMAIL`
 - paginile publice pentru produse si colectii folosesc URL-uri reale (`/produse/...`, `/colectii/...`), date structurate JSON-LD, `robots.txt` si `sitemap.xml`
+- exista si pagini publice dedicate pentru SEO: `cerere-oferta` si `colectii-riflaje`
+- pagina `cerere-oferta` trimite cererea selectata pe emailul configurat pentru notificari
 
 Serverul salveaza modificarile in:
 
@@ -145,6 +147,7 @@ Calculatorul de pe pagina produsului presupune montaj vertical. El calculeaza ca
 - `GET /api/collections`
 - `GET /api/collections/:id`
 - `POST /api/orders`
+- `POST /api/quote-requests`
 - `POST /api/admin/login`
 - `POST /api/admin/logout`
 - `GET /api/admin/me`

@@ -65,6 +65,8 @@ export default async function handler(_req: any, res: any) {
     const siteUrl = String(settings?.siteUrl || fallbackSiteUrl).trim()
     const urls = [
       buildUrlTag(toAbsoluteUrl(siteUrl, '/'), '1.0', 'daily'),
+      buildUrlTag(toAbsoluteUrl(siteUrl, '/colectii-riflaje'), '0.85', 'weekly'),
+      buildUrlTag(toAbsoluteUrl(siteUrl, '/cerere-oferta'), '0.75', 'weekly'),
       ...collections.map((collection: { id: string; title: string }) =>
         buildUrlTag(toAbsoluteUrl(siteUrl, buildCollectionPath(collection)), '0.8', 'weekly'),
       ),

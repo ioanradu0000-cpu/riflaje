@@ -139,6 +139,7 @@ function withDefaults(db) {
     products: (db.products || []).map(normalizeProduct),
     collections: (db.collections || []).map(normalizeCollection),
     orders: db.orders || [],
+    quoteRequests: db.quoteRequests || [],
   }
 }
 
@@ -314,6 +315,10 @@ function validateRomanianPhone(phone) {
   return /^(?:\+40|0040|0)\d{9}$/.test(compact)
 }
 
+function validateEmailAddress(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitize(email))
+}
+
 function createToken() {
   return jwt.sign({ user: adminUser }, jwtSecret, { expiresIn: '8h' })
 }
@@ -452,6 +457,12 @@ function createOrderNumber() {
   const now = new Date()
   const date = now.toISOString().slice(0, 10).replace(/-/g, '')
   return `DR-${date}-${now.getTime().toString().slice(-6)}`
+}
+
+function createQuoteRequestNumber() {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '')
+  return `OFR-${date}-${now.getTime().toString().slice(-6)}`
 }
 
 function escapeHtml(value) {
@@ -628,6 +639,46 @@ function notifyPaymentStatusChanged(order, previousStatus, settings) {
     `[DesignRiflaje] Status plata actualizat ${order.orderNumber}`,
     `Statusul platii s-a schimbat din "${previousStatus}" in "${order.paymentStatus}".\n\n${orderSummaryText(order)}`,
     `<p>Statusul platii s-a schimbat din <strong>${escapeHtml(previousStatus)}</strong> in <strong>${escapeHtml(order.paymentStatus)}</strong>.</p>${orderSummaryHtml(order)}`,
+  )
+}
+
+function quoteRequestSummaryText(quoteRequest) {
+  return [
+    `Cerere oferta: ${quoteRequest.requestNumber}`,
+    `Data: ${new Date(quoteRequest.createdAt).toLocaleString('ro-RO')}`,
+    '',
+    `Produs: ${quoteRequest.productTitle}`,
+    quoteRequest.customer.fullName ? `Nume: ${quoteRequest.customer.fullName}` : '',
+    `Telefon: ${quoteRequest.customer.phone}`,
+    `Email: ${quoteRequest.customer.email}`,
+    `Adresa: ${quoteRequest.customer.address}`,
+    quoteRequest.customer.notes ? `Observatii: ${quoteRequest.customer.notes}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+function quoteRequestSummaryHtml(quoteRequest) {
+  return `
+    <h2>Cerere oferta ${escapeHtml(quoteRequest.requestNumber)}</h2>
+    <p><strong>Data:</strong> ${escapeHtml(new Date(quoteRequest.createdAt).toLocaleString('ro-RO'))}</p>
+    <p><strong>Produs:</strong> ${escapeHtml(quoteRequest.productTitle)}</p>
+    <ul>
+      ${quoteRequest.customer.fullName ? `<li><strong>Nume:</strong> ${escapeHtml(quoteRequest.customer.fullName)}</li>` : ''}
+      <li><strong>Telefon:</strong> ${escapeHtml(quoteRequest.customer.phone)}</li>
+      <li><strong>Email:</strong> ${escapeHtml(quoteRequest.customer.email)}</li>
+      <li><strong>Adresa:</strong> ${escapeHtml(quoteRequest.customer.address)}</li>
+      ${quoteRequest.customer.notes ? `<li><strong>Observatii:</strong> ${escapeHtml(quoteRequest.customer.notes)}</li>` : ''}
+    </ul>
+  `
+}
+
+function notifyQuoteRequestCreated(quoteRequest, settings) {
+  return sendAdminNotification(
+    settings,
+    `[DesignRiflaje] Cerere oferta noua ${quoteRequest.requestNumber}`,
+    `Ai primit o cerere noua de oferta.\n\n${quoteRequestSummaryText(quoteRequest)}`,
+    `<p>Ai primit o cerere noua de oferta.</p>${quoteRequestSummaryHtml(quoteRequest)}`,
   )
 }
 
@@ -887,6 +938,58 @@ app.post('/api/orders', async (req, res) => {
     res.status(201).json({ order, bank: publicSettings(db.settings) })
   } catch (error) {
     res.status(400).json({ message: error.message || 'Comanda nu a putut fi salvata.' })
+  }
+})
+
+app.post('/api/quote-requests', async (req, res) => {
+  const productId = sanitize(req.body.productId)
+  const customer = {
+    fullName: sanitize(req.body.customer?.fullName),
+    phone: sanitize(req.body.customer?.phone),
+    email: sanitize(req.body.customer?.email),
+    address: sanitize(req.body.customer?.address),
+    notes: sanitize(req.body.customer?.notes),
+  }
+
+  if (!productId) {
+    return res.status(400).json({ message: 'Selecteaza produsul dorit.' })
+  }
+
+  if (!validateRomanianPhone(customer.phone)) {
+    return res.status(400).json({ message: 'Numarul de telefon nu este valid.' })
+  }
+
+  if (!validateEmailAddress(customer.email)) {
+    return res.status(400).json({ message: 'Adresa de email nu este valida.' })
+  }
+
+  if (!customer.address) {
+    return res.status(400).json({ message: 'Adresa este obligatorie.' })
+  }
+
+  try {
+    const db = await readDb()
+    const product = db.products.find((item) => item.id === productId && item.active)
+
+    if (!product) {
+      return res.status(404).json({ message: 'Produsul selectat nu exista.' })
+    }
+
+    const quoteRequest = {
+      id: `quote-${Date.now()}`,
+      requestNumber: createQuoteRequestNumber(),
+      createdAt: new Date().toISOString(),
+      productId: product.id,
+      productTitle: product.title,
+      customer,
+    }
+
+    db.quoteRequests.unshift(quoteRequest)
+    await writeDb(db)
+    await notifyQuoteRequestCreated(quoteRequest, db.settings)
+    res.status(201).json({ quoteRequest })
+  } catch (error) {
+    res.status(400).json({ message: error.message || 'Cererea de oferta nu a putut fi trimisa.' })
   }
 })
 

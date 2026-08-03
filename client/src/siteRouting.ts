@@ -1,7 +1,9 @@
 export type PublicPage =
   | 'home'
   | 'collection'
+  | 'collectionsGuide'
   | 'product'
+  | 'quoteRequest'
   | 'cart'
   | 'checkout'
   | 'confirmation'
@@ -10,6 +12,7 @@ export type SiteRoute = {
   page: PublicPage
   collectionId?: string | null
   productId?: string | null
+  quoteProductId?: string | null
 }
 
 type RouteEntity = {
@@ -50,6 +53,8 @@ export function buildCollectionPath(collection: RouteEntity) {
 export function parseRoutePath(pathname: string): SiteRoute {
   const normalized = normalizePath(pathname)
 
+  const params = new URLSearchParams(window.location.search)
+
   if (normalized === '/cos') {
     return { page: 'cart' }
   }
@@ -60,6 +65,17 @@ export function parseRoutePath(pathname: string): SiteRoute {
 
   if (normalized === '/comanda/confirmare') {
     return { page: 'confirmation' }
+  }
+
+  if (normalized === '/cerere-oferta') {
+    return {
+      page: 'quoteRequest',
+      quoteProductId: params.get('produs'),
+    }
+  }
+
+  if (normalized === '/colectii-riflaje') {
+    return { page: 'collectionsGuide' }
   }
 
   if (normalized.startsWith('/produse/')) {
@@ -96,6 +112,14 @@ export function buildRoutePath(
 
   if (route.page === 'cart') {
     return '/cos'
+  }
+
+  if (route.page === 'quoteRequest') {
+    return route.quoteProductId ? `/cerere-oferta?produs=${encodeURIComponent(route.quoteProductId)}` : '/cerere-oferta'
+  }
+
+  if (route.page === 'collectionsGuide') {
+    return '/colectii-riflaje'
   }
 
   if (route.page === 'checkout') {

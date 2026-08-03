@@ -95,6 +95,14 @@ type CheckoutForm = {
   notes: string
 }
 
+type QuoteRequestForm = {
+  fullName: string
+  phone: string
+  email: string
+  address: string
+  notes: string
+}
+
 type OrderResponse = {
   order: {
     id: string
@@ -595,11 +603,23 @@ function App() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     initialRoute.productId || null,
   )
-  const [currentPath, setCurrentPath] = useState(window.location.pathname)
+  const [selectedQuoteProductId, setSelectedQuoteProductId] = useState<string | null>(
+    initialRoute.quoteProductId || null,
+  )
+  const [currentPath, setCurrentPath] = useState(`${window.location.pathname}${window.location.search}`)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [checkoutError, setCheckoutError] = useState('')
   const [confirmation, setConfirmation] = useState<OrderResponse | null>(null)
+  const [quoteRequestForm, setQuoteRequestForm] = useState<QuoteRequestForm>({
+    fullName: '',
+    phone: '',
+    email: '',
+    address: '',
+    notes: '',
+  })
+  const [quoteRequestError, setQuoteRequestError] = useState('')
+  const [quoteRequestSuccess, setQuoteRequestSuccess] = useState('')
   const [form, setForm] = useState<CheckoutForm>({
     fullName: '',
     phone: '',
@@ -646,7 +666,8 @@ function App() {
       setPage(nextRoute.page)
       setSelectedCollectionId(nextRoute.collectionId || null)
       setSelectedProductId(nextRoute.productId || null)
-      setCurrentPath(window.location.pathname)
+      setSelectedQuoteProductId(nextRoute.quoteProductId || null)
+      setCurrentPath(`${window.location.pathname}${window.location.search}`)
     }
 
     window.addEventListener('popstate', syncRouteFromLocation)
@@ -655,7 +676,7 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [page, selectedCollectionId, selectedProductId])
+  }, [page, selectedCollectionId, selectedProductId, selectedQuoteProductId])
 
   const productById = useMemo(
     () => new Map(products.map((product) => [product.id, product])),
@@ -695,13 +716,13 @@ function App() {
     settings?.heroDescription || 'Riflaje profesionale pentru amenajari moderne.'
   const siteUrl = settings?.siteUrl?.trim() || window.location.origin
   const heroImages = getImageSet(settings?.heroImage || fallbackHeroImage, settings?.heroImages)
-  const contactHref = settings?.email ? `mailto:${settings.email}` : '#contact'
   const collectionById = useMemo(
     () => new Map(collections.map((collection) => [collection.id, collection])),
     [collections],
   )
   const selectedCollection = selectedCollectionId ? collectionById.get(selectedCollectionId) : null
   const selectedProduct = selectedProductId ? productById.get(selectedProductId) : null
+  const selectedQuoteProduct = selectedQuoteProductId ? productById.get(selectedQuoteProductId) : null
   const defaultSeoTitle = settings?.seoTitle || title
   const defaultSeoDescription =
     settings?.seoDescription || heroDescription || 'Magazin online pentru riflaje decorative premium.'
@@ -755,6 +776,32 @@ function App() {
       }
     }
 
+    if (page === 'collectionsGuide') {
+      return {
+        title: `Colectii de riflaje decorative | ${title}`,
+        description:
+          'Descopera colectiile de riflaje decorative, stilurile disponibile si produsele potrivite pentru living, dormitor sau spatii comerciale.',
+        image: defaultSeoImage,
+        robots: 'index, follow',
+        type: 'website',
+      }
+    }
+
+    if (page === 'quoteRequest') {
+      const productName = selectedQuoteProduct?.title || 'riflaje decorative'
+      return {
+        title: `Cerere oferta ${productName} | ${title}`,
+        description:
+          'Trimite rapid o cerere de oferta pentru produsul dorit si primeste raspuns pe email pentru riflaje decorative personalizate.',
+        image:
+          selectedQuoteProduct
+            ? getImageSet(selectedQuoteProduct.image, selectedQuoteProduct.images)[0] || defaultSeoImage
+            : defaultSeoImage,
+        robots: 'index, follow',
+        type: 'website',
+      }
+    }
+
     if (page === 'cart') {
       return {
         title: `Cos | ${title}`,
@@ -798,6 +845,7 @@ function App() {
     defaultSeoImage,
     defaultSeoTitle,
     page,
+    selectedQuoteProduct,
     selectedCollection,
     selectedProduct,
     title,
@@ -807,6 +855,7 @@ function App() {
     const nextPage = route.page
     const nextCollectionId = route.collectionId || null
     const nextProductId = route.productId || null
+    const nextQuoteProductId = route.quoteProductId || null
     const nextCollection =
       nextCollectionId && nextCollectionId === selectedCollectionId
         ? selectedCollection
@@ -827,9 +876,10 @@ function App() {
     setPage(nextPage)
     setSelectedCollectionId(nextCollectionId)
     setSelectedProductId(nextProductId)
+    setSelectedQuoteProductId(nextQuoteProductId)
     setCurrentPath(nextPath)
 
-    if (window.location.pathname !== nextPath) {
+    if (`${window.location.pathname}${window.location.search}` !== nextPath) {
       window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextPath)
     }
   }
@@ -947,6 +997,38 @@ function App() {
       })
     }
 
+    if (page === 'collectionsGuide') {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Colectii de riflaje decorative',
+        description:
+          'Colectii de riflaje decorative pentru interioare moderne, cu produse grupate pe stiluri si finisaje.',
+        url: currentUrl,
+      })
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Colectii DesignRiflaje',
+        itemListElement: collections.map((collection, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          url: toAbsoluteUrl(siteUrl, buildCollectionPath(collection)),
+          name: collection.title,
+        })),
+      })
+    }
+
+    if (page === 'quoteRequest') {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'ContactPage',
+        name: 'Cerere oferta',
+        description: routeSeo.description,
+        url: currentUrl,
+      })
+    }
+
     if (page === 'product' && selectedProduct) {
       const productPrice = parseMoneyToCents(selectedProduct.price)
 
@@ -984,8 +1066,10 @@ function App() {
     currentUrl,
     defaultSeoDescription,
     page,
+    collections,
     products,
     routeSeo,
+    selectedQuoteProduct,
     selectedCollection,
     selectedProduct,
     settings?.email,
@@ -1001,6 +1085,15 @@ function App() {
 
   function openProduct(productId: string) {
     navigate({ page: 'product', productId })
+  }
+
+  function openQuoteRequest(productId?: string) {
+    setQuoteRequestError('')
+    setQuoteRequestSuccess('')
+    navigate({
+      page: 'quoteRequest',
+      quoteProductId: productId || selectedQuoteProductId || selectedProductId || null,
+    })
   }
 
   function addToCart(product: Product) {
@@ -1089,6 +1182,59 @@ function App() {
     }
   }
 
+  async function submitQuoteRequest(event: FormEvent) {
+    event.preventDefault()
+    setQuoteRequestError('')
+    setQuoteRequestSuccess('')
+
+    if (!selectedQuoteProductId) {
+      setQuoteRequestError('Selecteaza produsul pentru care vrei oferta.')
+      return
+    }
+
+    if (!isRomanianPhone(quoteRequestForm.phone)) {
+      setQuoteRequestError('Numarul de telefon nu este valid pentru Romania.')
+      return
+    }
+
+    if (!quoteRequestForm.email.trim() || !quoteRequestForm.address.trim()) {
+      setQuoteRequestError('Completeaza emailul si adresa.')
+      return
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/quote-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: selectedQuoteProductId,
+          customer: quoteRequestForm,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Cererea de oferta nu a putut fi trimisa.')
+      }
+
+      setQuoteRequestSuccess(
+        `Cererea de oferta ${data.quoteRequest?.requestNumber || ''} a fost trimisa. Vei primi raspuns pe email sau telefon.`,
+      )
+      setQuoteRequestForm({
+        fullName: '',
+        phone: '',
+        email: '',
+        address: '',
+        notes: '',
+      })
+    } catch (err) {
+      setQuoteRequestError(
+        err instanceof Error ? err.message : 'Cererea de oferta nu a putut fi trimisa.',
+      )
+    }
+  }
+
   function renderLogo() {
     if (settings?.logo) {
       return (
@@ -1121,7 +1267,8 @@ function App() {
           </button>
           <div className="hidden items-center gap-7 text-sm font-medium text-[#665d52] md:flex">
             <button className="transition hover:text-[#211c16]" onClick={() => navigate({ page: 'home' })} type="button">Produse</button>
-            <a href="#colectii" onClick={() => navigate({ page: 'home' })}>Colectii</a>
+            <button className="transition hover:text-[#211c16]" onClick={() => navigate({ page: 'collectionsGuide' })} type="button">Colectii</button>
+            <button className="transition hover:text-[#211c16]" onClick={() => openQuoteRequest()} type="button">Cerere oferta</button>
             <a href="#contact">Contact</a>
           </div>
           <div className="flex items-center gap-2">
@@ -1136,12 +1283,13 @@ function App() {
                 {quantityTotal}
               </span>
             </button>
-            <a
+            <button
               className="hidden rounded-md bg-[#7a4d2b] px-4 py-2 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#633d21] hover:shadow-lg sm:inline-flex"
-              href={contactHref}
+              onClick={() => openQuoteRequest()}
+              type="button"
             >
               Cere oferta
-            </a>
+            </button>
             <Menu className="size-6 md:hidden" aria-label="Meniu" />
           </div>
         </nav>
@@ -1164,10 +1312,10 @@ function App() {
                 <a className="inline-flex items-center justify-center rounded-md bg-[#211c16] px-5 py-3 font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a3128] hover:shadow-xl" href="#produse">
                   Vezi produse
                 </a>
-                <a className="inline-flex items-center justify-center gap-2 rounded-md border border-[#cfc6b7] bg-white px-5 py-3 font-semibold text-[#211c16] transition duration-300 hover:-translate-y-0.5 hover:border-[#a89076] hover:shadow-lg" href={contactHref}>
+                <button className="inline-flex items-center justify-center gap-2 rounded-md border border-[#cfc6b7] bg-white px-5 py-3 font-semibold text-[#211c16] transition duration-300 hover:-translate-y-0.5 hover:border-[#a89076] hover:shadow-lg" onClick={() => openQuoteRequest()} type="button">
                   <Mail className="size-5" aria-hidden="true" />
-                  Contact
-                </a>
+                  Cerere oferta
+                </button>
               </div>
             </div>
             <div className="animate-float-slow overflow-hidden rounded-lg border border-[#ded7cb] bg-white shadow-[0_22px_70px_rgba(58,49,40,0.12)]">
@@ -1300,6 +1448,213 @@ function App() {
             </div>
           </section>
         </>
+      )}
+
+      {page === 'collectionsGuide' && (
+        <section className="animate-page-in mx-auto max-w-7xl px-5 py-10 sm:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <article className="rounded-lg border border-[#ded7cb] bg-white p-6 shadow-sm">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">
+                Ghid colectii
+              </p>
+              <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
+                Colectii de riflaje decorative pentru interioare moderne
+              </h1>
+              <p className="mt-5 text-lg leading-8 text-[#665d52]">
+                Descopera colectiile noastre de riflaje decorative grupate pe stil, finisaj si profil. Pagina te ajuta sa alegi mai usor intre modele clasice, riflaje concave sau variante late, potrivite pentru living, dormitor, hol sau spatii comerciale.
+              </p>
+              <p className="mt-4 text-lg leading-8 text-[#665d52]">
+                Fiecare colectie include produse compatibile ca aspect si proportii, astfel incat sa poti compara rapid culorile, latimile si atmosfera finala pe care vrei sa o obtii in proiect.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
+                  className="rounded-md bg-[#211c16] px-5 py-3 font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#3a3128] hover:shadow-xl"
+                  onClick={() => navigate({ page: 'home' })}
+                  type="button"
+                >
+                  Vezi toate produsele
+                </button>
+                <button
+                  className="rounded-md border border-[#cfc6b7] bg-white px-5 py-3 font-semibold text-[#211c16] transition duration-300 hover:-translate-y-0.5 hover:border-[#a89076] hover:shadow-lg"
+                  onClick={() => openQuoteRequest()}
+                  type="button"
+                >
+                  Cere oferta
+                </button>
+              </div>
+            </article>
+
+            <div className="rounded-lg border border-[#ded7cb] bg-[#211c16] p-6 text-white shadow-[0_24px_70px_rgba(58,49,40,0.14)]">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#d7b38d]">
+                Cum alegi
+              </p>
+              <div className="mt-5 grid gap-4">
+                {[
+                  'Alege profilul in functie de latimea peretelui si stilul dorit.',
+                  'Compara nuanta riflajelor cu pardoseala, mobilierul si lumina naturala.',
+                  'Pentru proiecte complete, trimite o cerere de oferta cu produsul dorit si dimensiunile spatiului.',
+                ].map((item) => (
+                  <div className="rounded-md border border-white/10 bg-white/5 p-4 text-white/85" key={item}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">
+                  Colectii disponibile
+                </p>
+                <h2 className="mt-2 text-3xl font-semibold">Modele grupate pe stiluri</h2>
+              </div>
+              <p className="max-w-2xl text-[#665d52]">
+                Fiecare colectie te ajuta sa navighezi mai rapid intre produse similare si sa alegi solutia potrivita pentru proiectul tau.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {collections.map((collection, index) => (
+                <a
+                  className="group animate-card-in overflow-hidden rounded-lg border border-[#ded7cb] bg-white text-left shadow-sm transition duration-500 hover:-translate-y-2 hover:border-[#b99d7f] hover:shadow-[0_24px_60px_rgba(58,49,40,0.16)]"
+                  href={buildCollectionPath(collection)}
+                  key={collection.id}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    openCollection(collection.id)
+                  }}
+                  style={{ animationDelay: `${index * 70}ms` }}
+                >
+                  <SlidingImages
+                    alt={collection.title}
+                    className="aspect-[16/10] w-full"
+                    images={getImageSet(collection.image, collection.images)}
+                    interval={3800}
+                    showDots
+                  />
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-xl font-semibold">{collection.title}</h3>
+                      <span className="rounded-md bg-[#f6f4ef] px-2.5 py-1 text-xs font-semibold text-[#665d52]">
+                        {collection.products.length} produse
+                      </span>
+                    </div>
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#665d52]">
+                      {collection.description || `Exploreaza produsele din colectia ${collection.title}.`}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {page === 'quoteRequest' && (
+        <section className="animate-page-in mx-auto max-w-7xl px-5 py-10 sm:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1fr_0.92fr] lg:items-start">
+            <article className="rounded-lg border border-[#ded7cb] bg-white p-6 shadow-sm">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">
+                Cerere oferta
+              </p>
+              <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
+                Solicita rapid o oferta pentru riflajele dorite
+              </h1>
+              <p className="mt-5 text-lg leading-8 text-[#665d52]">
+                Selecteaza produsul care te intereseaza, completeaza datele de contact si adresa, iar cererea ajunge direct pe email pentru a putea primi o oferta personalizata.
+              </p>
+              <div className="mt-8 rounded-lg border border-[#ded7cb] bg-[#f6f4ef] p-5">
+                <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4d2b]">
+                  De ce sa trimiti cerere
+                </p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-[#665d52]">
+                  <p>Primesti confirmare pentru produsul selectat si disponibilitatea lui.</p>
+                  <p>Poti mentiona adresa pentru o estimare mai buna a livrarii.</p>
+                  <p>Cererea este utila mai ales pentru proiecte mai mari sau pentru compararea mai multor variante.</p>
+                </div>
+              </div>
+            </article>
+
+            <form className="rounded-lg border border-[#ded7cb] bg-white p-6 shadow-sm" onSubmit={submitQuoteRequest}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="sm:col-span-2 text-sm font-medium text-[#665d52]">
+                  Produs dorit *
+                  <select
+                    className="mt-2 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setSelectedQuoteProductId(event.target.value || null)}
+                    value={selectedQuoteProductId || ''}
+                  >
+                    <option value="">Selecteaza produsul</option>
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-sm font-medium text-[#665d52]">
+                  Nume
+                  <input
+                    className="mt-2 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setQuoteRequestForm({ ...quoteRequestForm, fullName: event.target.value })}
+                    value={quoteRequestForm.fullName}
+                  />
+                </label>
+                <label className="text-sm font-medium text-[#665d52]">
+                  Telefon *
+                  <input
+                    className="mt-2 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setQuoteRequestForm({ ...quoteRequestForm, phone: event.target.value })}
+                    value={quoteRequestForm.phone}
+                  />
+                </label>
+                <label className="sm:col-span-2 text-sm font-medium text-[#665d52]">
+                  Email *
+                  <input
+                    className="mt-2 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setQuoteRequestForm({ ...quoteRequestForm, email: event.target.value })}
+                    type="email"
+                    value={quoteRequestForm.email}
+                  />
+                </label>
+                <label className="sm:col-span-2 text-sm font-medium text-[#665d52]">
+                  Adresa *
+                  <textarea
+                    className="mt-2 min-h-28 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setQuoteRequestForm({ ...quoteRequestForm, address: event.target.value })}
+                    value={quoteRequestForm.address}
+                  />
+                </label>
+                <label className="sm:col-span-2 text-sm font-medium text-[#665d52]">
+                  Observatii
+                  <textarea
+                    className="mt-2 min-h-24 w-full rounded-md border border-[#cfc6b7] px-3 py-3 outline-none focus:border-[#7a4d2b]"
+                    onChange={(event) => setQuoteRequestForm({ ...quoteRequestForm, notes: event.target.value })}
+                    placeholder="De exemplu: suprafata aproximativa, culoarea dorita, termen estimat."
+                    value={quoteRequestForm.notes}
+                  />
+                </label>
+              </div>
+
+              {selectedQuoteProduct && (
+                <div className="mt-5 rounded-lg border border-[#ded7cb] bg-[#f6f4ef] p-4">
+                  <p className="text-sm font-semibold text-[#665d52]">Produs selectat</p>
+                  <p className="mt-1 text-lg font-semibold">{selectedQuoteProduct.title}</p>
+                  <p className="mt-1 text-sm text-[#7a4d2b]">{selectedQuoteProduct.price}</p>
+                </div>
+              )}
+
+              {quoteRequestError && <p className="mt-4 rounded-md bg-red-50 p-3 text-red-700">{quoteRequestError}</p>}
+              {quoteRequestSuccess && <p className="mt-4 rounded-md bg-emerald-50 p-3 text-emerald-700">{quoteRequestSuccess}</p>}
+
+              <button className="mt-6 w-full rounded-md bg-[#7a4d2b] px-5 py-4 font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#633d21] hover:shadow-xl" type="submit">
+                Trimite cererea de oferta
+              </button>
+            </form>
+          </div>
+        </section>
       )}
 
       {page === 'collection' && (
@@ -1452,14 +1807,24 @@ function App() {
                   </div>
 
                   {selectedProduct.available ? (
-                    <button
-                      className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#7a4d2b] px-5 py-4 font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-[#633d21] hover:shadow-xl sm:w-auto"
-                      onClick={() => addToCart(selectedProduct)}
-                      type="button"
-                    >
-                      <Plus className="size-5" aria-hidden="true" />
-                      Adauga in cos
-                    </button>
+                    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                      <button
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#7a4d2b] px-5 py-4 font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-[#633d21] hover:shadow-xl sm:w-auto"
+                        onClick={() => addToCart(selectedProduct)}
+                        type="button"
+                      >
+                        <Plus className="size-5" aria-hidden="true" />
+                        Adauga in cos
+                      </button>
+                      <button
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-[#cfc6b7] bg-white px-5 py-4 font-semibold text-[#211c16] transition duration-300 hover:-translate-y-1 hover:border-[#a89076] hover:shadow-lg sm:w-auto"
+                        onClick={() => openQuoteRequest(selectedProduct.id)}
+                        type="button"
+                      >
+                        <Mail className="size-5" aria-hidden="true" />
+                        Cere oferta
+                      </button>
+                    </div>
                   ) : (
                     <p className="mt-8 rounded-md bg-slate-100 px-5 py-4 font-semibold text-slate-600">
                       Acest produs este indisponibil si nu poate fi adaugat in cos.
