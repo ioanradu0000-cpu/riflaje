@@ -6,13 +6,15 @@ import express from 'express'
 import rateLimit from 'express-rate-limit'
 import jwt from 'jsonwebtoken'
 import nodemailer from 'nodemailer'
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const dataFile = path.join(__dirname, '..', 'data', 'db.json')
+const bundledDataFile = path.join(__dirname, '..', 'data', 'db.json')
+const dataDir = String(process.env.DATA_DIR || '').trim()
+const dataFile = dataDir ? path.join(dataDir, 'db.json') : bundledDataFile
 
 const app = express()
 const port = process.env.PORT || 4000
@@ -79,12 +81,29 @@ const loginLimiter = rateLimit({
 })
 
 async function readDb() {
+  await ensureDataFile()
   const raw = await readFile(dataFile, 'utf8')
   return withDefaults(JSON.parse(raw))
 }
 
 async function writeDb(data) {
+  await ensureDataFile()
   await writeFile(dataFile, `${JSON.stringify(withDefaults(data), null, 2)}\n`)
+}
+
+async function ensureDataFile() {
+  if (!dataDir) {
+    return
+  }
+
+  await mkdir(dataDir, { recursive: true })
+
+  try {
+    await readFile(dataFile, 'utf8')
+  } catch {
+    const seed = await readFile(bundledDataFile, 'utf8')
+    await writeFile(dataFile, seed)
+  }
 }
 
 function withDefaults(db) {
@@ -1034,4 +1053,5 @@ app.use((err, _req, res, _next) => {
 
 app.listen(port, () => {
   console.log(`PCforge API ruleaza pe http://localhost:${port}`)
+  console.log(`PCforge data file: ${dataFile}`)
 })

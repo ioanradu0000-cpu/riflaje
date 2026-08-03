@@ -41,9 +41,18 @@ Pentru configurare reala, copiaza `server/.env.example` in `server/.env` si sete
 ADMIN_USER=admin
 ADMIN_PASSWORD_HASH=hash_bcrypt
 JWT_SECRET=secret_lung_random
+DATA_DIR=/var/data
 ```
 
 Frontendul admin nu contine parola hardcodata. Autentificarea foloseste cookie `httpOnly`.
+
+Pentru Render cu persistent disk montat la `/var/data`, seteaza si:
+
+```bash
+DATA_DIR=/var/data
+```
+
+Astfel, backendul va salva `db.json` pe disk-ul persistent, nu in filesystem-ul temporar al serviciului.
 
 ## Notificari email
 
@@ -103,6 +112,7 @@ Intra in admin panel, apoi:
 - modifici `Titlu site`, `Logo URL`, vizibilitatea titlului, `Text principal`, slideshow-ul `Poze meniu principal`, `Email`, `Telefon`, `WhatsApp`, date bancare si costul livrarii din `Setari`
 - modifici `URL site public`, `SEO title`, `SEO description` si `SEO image URL` din `Setari` pentru titlul paginii, descrierea din rezultate si preview-urile cand linkul este distribuit
 - poti seta emailul public de contact in `Setari`; el poate fi folosit si ca destinatar implicit pentru notificari daca nu setezi `NOTIFICATION_EMAIL`
+- paginile publice pentru produse si colectii folosesc URL-uri reale (`/produse/...`, `/colectii/...`), date structurate JSON-LD, `robots.txt` si `sitemap.xml`
 
 Serverul salveaza modificarile in:
 

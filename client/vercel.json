@@ -2,5 +2,35 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install --include=optional --no-audit",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap.xml"
+    },
+    {
+      "source": "/produse/(.*)",
+      "destination": "/"
+    },
+    {
+      "source": "/colectii/(.*)",
+      "destination": "/"
+    },
+    {
+      "source": "/cos",
+      "destination": "/"
+    },
+    {
+      "source": "/comanda",
+      "destination": "/"
+    },
+    {
+      "source": "/comanda/confirmare",
+      "destination": "/"
+    }
+  ]
 }

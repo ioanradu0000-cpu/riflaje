@@ -15,6 +15,14 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
+import {
+  buildCollectionPath,
+  buildProductPath,
+  buildRoutePath,
+  parseRoutePath,
+  type PublicPage,
+  type SiteRoute,
+} from './siteRouting'
 
 type ImagePosition = {
   x: number
@@ -138,6 +146,37 @@ function upsertLinkTag(rel: string, href: string) {
   }
 
   element.setAttribute('href', href)
+}
+
+function upsertStructuredData(id: string, payload: Record<string, unknown> | Array<Record<string, unknown>>) {
+  let element = document.head.querySelector<HTMLScriptElement>(`script[data-seo-id="${id}"]`)
+
+  if (!element) {
+    element = document.createElement('script')
+    element.type = 'application/ld+json'
+    element.dataset.seoId = id
+    document.head.appendChild(element)
+  }
+
+  element.textContent = JSON.stringify(payload)
+}
+
+function removeStructuredData(id: string) {
+  document.head.querySelector(`script[data-seo-id="${id}"]`)?.remove()
+}
+
+function toAbsoluteUrl(siteUrl: string, path = '/') {
+  return new URL(path, siteUrl || window.location.origin).toString()
+}
+
+function truncateText(value: string, maxLength: number) {
+  const compact = value.replace(/\s+/g, ' ').trim()
+
+  if (compact.length <= maxLength) {
+    return compact
+  }
+
+  return `${compact.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`
 }
 
 function normalizeZooms(zooms: number[] | undefined, count: number) {
@@ -544,15 +583,19 @@ function isRomanianPhone(value: string) {
 }
 
 function App() {
+  const initialRoute = parseRoutePath(window.location.pathname)
   const [products, setProducts] = useState<Product[]>([])
   const [collections, setCollections] = useState<Collection[]>([])
   const [settings, setSettings] = useState<Settings | null>(null)
   const [cart, setCart] = useState<CartLine[]>(loadCart)
-  const [page, setPage] = useState<
-    'home' | 'collection' | 'product' | 'cart' | 'checkout' | 'confirmation'
-  >('home')
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null)
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [page, setPage] = useState<PublicPage>(initialRoute.page)
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(
+    initialRoute.collectionId || null,
+  )
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    initialRoute.productId || null,
+  )
+  const [currentPath, setCurrentPath] = useState(window.location.pathname)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [checkoutError, setCheckoutError] = useState('')
@@ -598,6 +641,19 @@ function App() {
   }, [cart])
 
   useEffect(() => {
+    function syncRouteFromLocation() {
+      const nextRoute = parseRoutePath(window.location.pathname)
+      setPage(nextRoute.page)
+      setSelectedCollectionId(nextRoute.collectionId || null)
+      setSelectedProductId(nextRoute.productId || null)
+      setCurrentPath(window.location.pathname)
+    }
+
+    window.addEventListener('popstate', syncRouteFromLocation)
+    return () => window.removeEventListener('popstate', syncRouteFromLocation)
+  }, [])
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [page, selectedCollectionId, selectedProductId])
 
@@ -637,10 +693,6 @@ function App() {
   const heroTitle = settings?.heroTitle || title
   const heroDescription =
     settings?.heroDescription || 'Riflaje profesionale pentru amenajari moderne.'
-  const seoTitle = settings?.seoTitle || title
-  const seoDescription =
-    settings?.seoDescription || heroDescription || 'Magazin online pentru riflaje decorative premium.'
-  const seoImage = settings?.seoImage || settings?.heroImage || settings?.logo || fallbackHeroImage
   const siteUrl = settings?.siteUrl?.trim() || window.location.origin
   const heroImages = getImageSet(settings?.heroImage || fallbackHeroImage, settings?.heroImages)
   const contactHref = settings?.email ? `mailto:${settings.email}` : '#contact'
@@ -650,30 +702,305 @@ function App() {
   )
   const selectedCollection = selectedCollectionId ? collectionById.get(selectedCollectionId) : null
   const selectedProduct = selectedProductId ? productById.get(selectedProductId) : null
+  const defaultSeoTitle = settings?.seoTitle || title
+  const defaultSeoDescription =
+    settings?.seoDescription || heroDescription || 'Magazin online pentru riflaje decorative premium.'
+  const defaultSeoImage =
+    settings?.seoImage || settings?.heroImage || settings?.logo || fallbackHeroImage
+  const currentUrl = toAbsoluteUrl(siteUrl, currentPath)
+  const currentRobots =
+    page === 'cart' || page === 'checkout' || page === 'confirmation' ? 'noindex, nofollow' : 'index, follow'
+
+  const routeSeo = useMemo(() => {
+    if (page === 'product') {
+      if (!selectedProduct) {
+        return {
+          title: `Produs negasit | ${title}`,
+          description: 'Produsul cautat nu este disponibil.',
+          image: defaultSeoImage,
+          robots: 'noindex, nofollow',
+          type: 'website',
+        }
+      }
+
+      return {
+        title: `${selectedProduct.title} | ${title}`,
+        description: truncateText(selectedProduct.description, 160),
+        image: getImageSet(selectedProduct.image, selectedProduct.images)[0] || defaultSeoImage,
+        robots: 'index, follow',
+        type: 'product',
+      }
+    }
+
+    if (page === 'collection') {
+      if (!selectedCollection) {
+        return {
+          title: `Colectie negasita | ${title}`,
+          description: 'Colectia cautata nu este disponibila.',
+          image: defaultSeoImage,
+          robots: 'noindex, nofollow',
+          type: 'website',
+        }
+      }
+
+      return {
+        title: `${selectedCollection.title} | ${title}`,
+        description: truncateText(
+          selectedCollection.description || `Descopera produsele din colectia ${selectedCollection.title}.`,
+          160,
+        ),
+        image: getImageSet(selectedCollection.image, selectedCollection.images)[0] || defaultSeoImage,
+        robots: 'index, follow',
+        type: 'website',
+      }
+    }
+
+    if (page === 'cart') {
+      return {
+        title: `Cos | ${title}`,
+        description: 'Revizuieste produsele selectate in cos.',
+        image: defaultSeoImage,
+        robots: currentRobots,
+        type: 'website',
+      }
+    }
+
+    if (page === 'checkout') {
+      return {
+        title: `Finalizare comanda | ${title}`,
+        description: 'Completeaza datele de livrare si finalizeaza comanda.',
+        image: defaultSeoImage,
+        robots: currentRobots,
+        type: 'website',
+      }
+    }
+
+    if (page === 'confirmation') {
+      return {
+        title: `Confirmare comanda | ${title}`,
+        description: 'Detalii despre comanda plasata.',
+        image: defaultSeoImage,
+        robots: currentRobots,
+        type: 'website',
+      }
+    }
+
+    return {
+      title: defaultSeoTitle,
+      description: defaultSeoDescription,
+      image: defaultSeoImage,
+      robots: 'index, follow',
+      type: 'website',
+    }
+  }, [
+    currentRobots,
+    defaultSeoDescription,
+    defaultSeoImage,
+    defaultSeoTitle,
+    page,
+    selectedCollection,
+    selectedProduct,
+    title,
+  ])
+
+  function navigate(route: SiteRoute, mode: 'push' | 'replace' = 'push') {
+    const nextPage = route.page
+    const nextCollectionId = route.collectionId || null
+    const nextProductId = route.productId || null
+    const nextCollection =
+      nextCollectionId && nextCollectionId === selectedCollectionId
+        ? selectedCollection
+        : nextCollectionId
+          ? collectionById.get(nextCollectionId) || null
+          : null
+    const nextProduct =
+      nextProductId && nextProductId === selectedProductId
+        ? selectedProduct
+        : nextProductId
+          ? productById.get(nextProductId) || null
+          : null
+    const nextPath = buildRoutePath(route, {
+      collection: nextCollection,
+      product: nextProduct,
+    })
+
+    setPage(nextPage)
+    setSelectedCollectionId(nextCollectionId)
+    setSelectedProductId(nextProductId)
+    setCurrentPath(nextPath)
+
+    if (window.location.pathname !== nextPath) {
+      window.history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextPath)
+    }
+  }
 
   useEffect(() => {
-    document.title = seoTitle
-    upsertMetaTag('name', 'description', seoDescription)
-    upsertMetaTag('property', 'og:title', seoTitle)
-    upsertMetaTag('property', 'og:description', seoDescription)
-    upsertMetaTag('property', 'og:type', 'website')
-    upsertMetaTag('property', 'og:url', siteUrl)
-    upsertMetaTag('property', 'og:image', seoImage)
+    if (page === 'product' && selectedProduct) {
+      const canonicalPath = buildProductPath(selectedProduct)
+
+      if (currentPath !== canonicalPath) {
+        navigate({ page: 'product', productId: selectedProduct.id }, 'replace')
+      }
+    }
+
+    if (page === 'collection' && selectedCollection) {
+      const canonicalPath = buildCollectionPath(selectedCollection)
+
+      if (currentPath !== canonicalPath) {
+        navigate({ page: 'collection', collectionId: selectedCollection.id }, 'replace')
+      }
+    }
+  }, [currentPath, page, selectedCollection, selectedProduct])
+
+  useEffect(() => {
+    document.title = routeSeo.title
+    upsertMetaTag('name', 'description', routeSeo.description)
+    upsertMetaTag('name', 'robots', routeSeo.robots)
+    upsertMetaTag('property', 'og:title', routeSeo.title)
+    upsertMetaTag('property', 'og:description', routeSeo.description)
+    upsertMetaTag('property', 'og:type', routeSeo.type)
+    upsertMetaTag('property', 'og:url', currentUrl)
+    upsertMetaTag('property', 'og:image', routeSeo.image)
     upsertMetaTag('name', 'twitter:card', 'summary_large_image')
-    upsertMetaTag('name', 'twitter:title', seoTitle)
-    upsertMetaTag('name', 'twitter:description', seoDescription)
-    upsertMetaTag('name', 'twitter:image', seoImage)
-    upsertLinkTag('canonical', siteUrl)
-  }, [seoDescription, seoImage, seoTitle, siteUrl])
+    upsertMetaTag('name', 'twitter:title', routeSeo.title)
+    upsertMetaTag('name', 'twitter:description', routeSeo.description)
+    upsertMetaTag('name', 'twitter:image', routeSeo.image)
+    upsertLinkTag('canonical', currentUrl)
+
+    const organizationSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: title,
+      url: siteUrl,
+      logo: settings?.logo ? toAbsoluteUrl(siteUrl, settings.logo) : undefined,
+      email: settings?.email || undefined,
+      telephone: settings?.phone || undefined,
+      sameAs: [],
+    }
+
+    const websiteSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: title,
+      url: siteUrl,
+      description: defaultSeoDescription,
+    }
+
+    const breadcrumbItems = [{ '@type': 'ListItem', position: 1, name: 'Acasa', item: toAbsoluteUrl(siteUrl, '/') }]
+
+    if (page === 'collection' && selectedCollection) {
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: 2,
+        name: selectedCollection.title,
+        item: currentUrl,
+      })
+    }
+
+    if (page === 'product' && selectedProduct) {
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Produse',
+        item: toAbsoluteUrl(siteUrl, '/'),
+      })
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: 3,
+        name: selectedProduct.title,
+        item: currentUrl,
+      })
+    }
+
+    const schemas: Array<Record<string, unknown>> = [organizationSchema, websiteSchema]
+
+    if (breadcrumbItems.length > 1) {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbItems,
+      })
+    }
+
+    if (page === 'home') {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: `${title} produse`,
+        itemListElement: products.slice(0, 24).map((product, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          url: toAbsoluteUrl(siteUrl, buildProductPath(product)),
+          name: product.title,
+        })),
+      })
+    }
+
+    if (page === 'collection' && selectedCollection) {
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: selectedCollection.title,
+        description: selectedCollection.description || undefined,
+        url: currentUrl,
+        image: getImageSet(selectedCollection.image, selectedCollection.images),
+      })
+    }
+
+    if (page === 'product' && selectedProduct) {
+      const productPrice = parseMoneyToCents(selectedProduct.price)
+
+      schemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: selectedProduct.title,
+        description: truncateText(selectedProduct.description, 5000),
+        image: getImageSet(selectedProduct.image, selectedProduct.images),
+        sku: selectedProduct.id,
+        url: currentUrl,
+        brand: {
+          '@type': 'Brand',
+          name: title,
+        },
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'RON',
+          price: Number((productPrice / 100).toFixed(2)),
+          availability: selectedProduct.available
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          url: currentUrl,
+        },
+      })
+    }
+
+    upsertStructuredData('site-schema', schemas)
+
+    return () => {
+      removeStructuredData('site-schema')
+    }
+  }, [
+    currentUrl,
+    defaultSeoDescription,
+    page,
+    products,
+    routeSeo,
+    selectedCollection,
+    selectedProduct,
+    settings?.email,
+    settings?.logo,
+    settings?.phone,
+    siteUrl,
+    title,
+  ])
 
   function openCollection(collectionId: string) {
-    setSelectedCollectionId(collectionId)
-    setPage('collection')
+    navigate({ page: 'collection', collectionId })
   }
 
   function openProduct(productId: string) {
-    setSelectedProductId(productId)
-    setPage('product')
+    navigate({ page: 'product', productId })
   }
 
   function addToCart(product: Product) {
@@ -697,7 +1024,7 @@ function App() {
 
       return [...current, { productId: product.id, quantity: safeQuantity }]
     })
-    setPage('cart')
+    navigate({ page: 'cart' })
   }
 
   function updateQuantity(productId: string, quantity: number) {
@@ -756,7 +1083,7 @@ function App() {
 
       setConfirmation(data)
       setCart([])
-      setPage('confirmation')
+      navigate({ page: 'confirmation' })
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Comanda nu a putut fi salvata.')
     }
@@ -788,19 +1115,19 @@ function App() {
     <main className="min-h-screen bg-[#f6f4ef] text-[#211c16]">
       <header className="sticky top-0 z-20 border-b border-[#ded7cb] bg-[#f6f4ef]/90 backdrop-blur animate-drop-in">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
-          <button className="flex min-w-0 items-center gap-3 transition duration-300 hover:scale-[1.02]" onClick={() => setPage('home')} type="button">
+          <button className="flex min-w-0 items-center gap-3 transition duration-300 hover:scale-[1.02]" onClick={() => navigate({ page: 'home' })} type="button">
             {renderLogo()}
             {showSiteTitle && <span className="truncate text-lg font-semibold">{title}</span>}
           </button>
           <div className="hidden items-center gap-7 text-sm font-medium text-[#665d52] md:flex">
-            <button className="transition hover:text-[#211c16]" onClick={() => setPage('home')} type="button">Produse</button>
-            <a href="#colectii" onClick={() => setPage('home')}>Colectii</a>
+            <button className="transition hover:text-[#211c16]" onClick={() => navigate({ page: 'home' })} type="button">Produse</button>
+            <a href="#colectii" onClick={() => navigate({ page: 'home' })}>Colectii</a>
             <a href="#contact">Contact</a>
           </div>
           <div className="flex items-center gap-2">
             <button
               className="relative inline-flex items-center gap-2 rounded-md border border-[#cfc6b7] bg-white px-3 py-2 text-sm font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-              onClick={() => setPage('cart')}
+              onClick={() => navigate({ page: 'cart' })}
               type="button"
             >
               <ShoppingCart className="size-5" aria-hidden="true" />
@@ -874,12 +1201,15 @@ function App() {
               {!loading && !error && (
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {collections.map((collection, index) => (
-                    <button
+                    <a
                       className="group animate-card-in overflow-hidden rounded-lg border border-white/15 bg-white/8 text-left shadow-sm transition duration-500 hover:-translate-y-2 hover:border-[#d7b38d] hover:bg-white/12 hover:shadow-[0_24px_60px_rgba(0,0,0,0.28)]"
+                      href={buildCollectionPath(collection)}
                       key={collection.id}
-                      onClick={() => openCollection(collection.id)}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        openCollection(collection.id)
+                      }}
                       style={{ animationDelay: `${index * 80}ms` }}
-                      type="button"
                     >
                       <div className="relative overflow-hidden">
                         <SlidingImages
@@ -907,7 +1237,7 @@ function App() {
                           </p>
                         )}
                       </div>
-                    </button>
+                    </a>
                   ))}
                   {collections.length === 0 && <p className="text-white/70">Nu exista colectii active.</p>}
                 </div>
@@ -933,12 +1263,15 @@ function App() {
               {!loading && !error && (
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {products.map((product, index) => (
-                    <button
+                    <a
                       className="product-tile group animate-card-in overflow-hidden rounded-lg border border-[#ded7cb] bg-[#fbfaf7] text-left shadow-sm transition duration-500 hover:-translate-y-2 hover:border-[#b99d7f] hover:shadow-[0_24px_60px_rgba(58,49,40,0.16)]"
+                      href={buildProductPath(product)}
                       key={product.id}
-                      onClick={() => openProduct(product.id)}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        openProduct(product.id)
+                      }}
                       style={{ animationDelay: `${index * 70}ms` }}
-                      type="button"
                     >
                       <div className="relative overflow-hidden">
                         <SlidingImages
@@ -959,7 +1292,7 @@ function App() {
                           {product.title}
                         </h3>
                       </div>
-                    </button>
+                    </a>
                   ))}
                   {products.length === 0 && <p className="text-[#665d52]">Nu exista produse active.</p>}
                 </div>
@@ -971,7 +1304,7 @@ function App() {
 
       {page === 'collection' && (
         <section className="animate-page-in mx-auto max-w-7xl px-5 py-10 sm:px-8">
-          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52] transition hover:text-[#211c16]" onClick={() => setPage('home')} type="button">
+          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52] transition hover:text-[#211c16]" onClick={() => navigate({ page: 'home' })} type="button">
             <ArrowLeft className="size-4" aria-hidden="true" />
             Inapoi la colectii
           </button>
@@ -1017,12 +1350,15 @@ function App() {
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {selectedCollection.products.map((product, index) => (
-                    <button
+                    <a
                       className="product-tile group animate-card-in overflow-hidden rounded-lg border border-[#ded7cb] bg-[#fbfaf7] text-left shadow-sm transition duration-500 hover:-translate-y-2 hover:border-[#b99d7f] hover:shadow-[0_24px_60px_rgba(58,49,40,0.16)]"
+                      href={buildProductPath(product)}
                       key={product.id}
-                      onClick={() => openProduct(product.id)}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        openProduct(product.id)
+                      }}
                       style={{ animationDelay: `${index * 70}ms` }}
-                      type="button"
                     >
                       <div className="relative overflow-hidden">
                         <SlidingImages
@@ -1043,7 +1379,7 @@ function App() {
                           {product.title}
                         </h3>
                       </div>
-                    </button>
+                    </a>
                   ))}
                   {selectedCollection.products.length === 0 && (
                     <p className="rounded-md bg-white p-4 text-[#665d52]">
@@ -1056,7 +1392,7 @@ function App() {
           ) : (
             <div className="rounded-lg border border-[#ded7cb] bg-white p-6">
               <h1 className="text-2xl font-semibold">Colectia nu a fost gasita.</h1>
-              <button className="mt-4 rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => setPage('home')} type="button">
+              <button className="mt-4 rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => navigate({ page: 'home' })} type="button">
                 Inapoi la colectii
               </button>
             </div>
@@ -1066,7 +1402,7 @@ function App() {
 
       {page === 'product' && (
         <section className="animate-page-in mx-auto max-w-7xl px-5 py-10 sm:px-8">
-          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52] transition hover:text-[#211c16]" onClick={() => setPage('home')} type="button">
+          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52] transition hover:text-[#211c16]" onClick={() => navigate({ page: 'home' })} type="button">
             <ArrowLeft className="size-4" aria-hidden="true" />
             Inapoi la produse
           </button>
@@ -1140,7 +1476,7 @@ function App() {
           ) : (
             <div className="rounded-lg border border-[#ded7cb] bg-white p-6">
               <h1 className="text-2xl font-semibold">Produsul nu a fost gasit.</h1>
-              <button className="mt-4 rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => setPage('home')} type="button">
+              <button className="mt-4 rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => navigate({ page: 'home' })} type="button">
                 Inapoi la produse
               </button>
             </div>
@@ -1150,7 +1486,7 @@ function App() {
 
       {page === 'cart' && (
         <section className="animate-page-in mx-auto max-w-5xl px-5 py-10 sm:px-8">
-          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52]" onClick={() => setPage('home')} type="button">
+          <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52]" onClick={() => navigate({ page: 'home' })} type="button">
             <ArrowLeft className="size-4" aria-hidden="true" />
             Inapoi la produse
           </button>
@@ -1188,7 +1524,7 @@ function App() {
                     <span>Subtotal produse</span>
                     <strong>{formatLei(subtotalCents)}</strong>
                   </div>
-                  <button className="mt-4 w-full rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => setPage('checkout')} type="button">
+                  <button className="mt-4 w-full rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white" onClick={() => navigate({ page: 'checkout' })} type="button">
                     Continua catre comanda
                   </button>
                 </div>
@@ -1201,7 +1537,7 @@ function App() {
       {page === 'checkout' && (
         <section className="animate-page-in mx-auto grid max-w-7xl gap-6 px-5 py-10 sm:px-8 lg:grid-cols-[1fr_380px]">
           <form className="rounded-lg border border-[#ded7cb] bg-white p-5" onSubmit={submitOrder}>
-            <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52]" onClick={() => setPage('cart')} type="button">
+            <button className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#665d52]" onClick={() => navigate({ page: 'cart' })} type="button">
               <ArrowLeft className="size-4" aria-hidden="true" />
               Inapoi la cos
             </button>
@@ -1303,6 +1639,24 @@ function App() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {page === 'confirmation' && !confirmation && (
+        <section className="animate-page-in mx-auto max-w-5xl px-5 py-10 sm:px-8">
+          <div className="rounded-lg border border-[#ded7cb] bg-white p-6">
+            <h1 className="text-3xl font-semibold">Confirmarea comenzii nu mai este disponibila.</h1>
+            <p className="mt-2 text-[#665d52]">
+              Daca ai inchis pagina sau ai dat refresh, poti continua din pagina principala sau din panoul de admin.
+            </p>
+            <button
+              className="mt-6 rounded-md bg-[#211c16] px-4 py-3 font-semibold text-white"
+              onClick={() => navigate({ page: 'home' })}
+              type="button"
+            >
+              Inapoi la produse
+            </button>
           </div>
         </section>
       )}
