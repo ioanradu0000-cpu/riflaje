@@ -53,6 +53,7 @@ type CollectionForm = Omit<Collection, 'id'>
 
 type Settings = {
   siteTitle: string
+  siteUrl: string
   logo: string
   showSiteTitle: boolean
   heroTitle: string
@@ -68,6 +69,9 @@ type Settings = {
   bankInstructions: string
   freeShippingMessage: string
   shippingCostPerItem: number
+  seoTitle: string
+  seoDescription: string
+  seoImage: string
 }
 
 type Order = {
@@ -126,6 +130,7 @@ const emptyCollection: CollectionForm = {
 }
 const emptySettings: Settings = {
   siteTitle: '',
+  siteUrl: '',
   logo: '',
   showSiteTitle: true,
   heroTitle: '',
@@ -141,6 +146,9 @@ const emptySettings: Settings = {
   bankInstructions: '',
   freeShippingMessage: '',
   shippingCostPerItem: 10,
+  seoTitle: '',
+  seoDescription: '',
+  seoImage: '',
 }
 const paymentStatuses = ['In asteptarea platii', 'Platita', 'Anulata']
 const orderStatuses = [
@@ -176,7 +184,7 @@ function normalizeZooms(zooms: number[] | undefined, count: number) {
   })
 }
 
-function normalizePositions(positions: ImagePosition[] | undefined, count: number) {
+  function normalizePositions(positions: ImagePosition[] | undefined, count: number) {
   return Array.from({ length: count }, (_, index) => {
     const position = positions?.[index]
     const x = Number(position?.x ?? 50)
@@ -187,6 +195,15 @@ function normalizePositions(positions: ImagePosition[] | undefined, count: numbe
       y: Number.isFinite(y) ? Math.min(100, Math.max(0, Math.round(y))) : 50,
     }
   })
+}
+
+function normalizeSettings(settings: Partial<Settings>): Settings {
+  return {
+    ...emptySettings,
+    ...settings,
+    heroImages: normalizeImages(settings.heroImages, settings.heroImage),
+    heroImage: normalizeImages(settings.heroImages, settings.heroImage)[0] || '',
+  }
 }
 
 function splitPastedImages(value: string) {
@@ -623,11 +640,7 @@ function App() {
       })),
     )
     setOrders(nextOrders)
-    setSettings({
-      ...nextSettings,
-      heroImages: normalizeImages(nextSettings.heroImages, nextSettings.heroImage),
-      heroImage: normalizeImages(nextSettings.heroImages, nextSettings.heroImage)[0] || '',
-    })
+    setSettings(normalizeSettings(nextSettings))
   }
 
   useEffect(() => {
@@ -1355,8 +1368,13 @@ function App() {
         {tab === 'settings' && (
           <form className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm" onSubmit={handleSaveSettings}>
             <h2 className="text-lg font-semibold">Setari site si plata</h2>
+            <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Pe Render Free, modificarile salvate in fisierul JSON nu sunt persistente dupa redeploy sau restart.
+              Pentru setari, produse si comenzi care raman salvate, muta datele intr-o baza de date sau foloseste storage persistent.
+            </div>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <label className="text-sm font-medium text-slate-700">Nume site<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, siteTitle: event.target.value })} value={settings.siteTitle} /></label>
+              <label className="text-sm font-medium text-slate-700">URL site public<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, siteUrl: event.target.value })} placeholder="https://www.designriflaje.com" value={settings.siteUrl} /></label>
               <label className="text-sm font-medium text-slate-700">Titlu principal<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, heroTitle: event.target.value })} value={settings.heroTitle} /></label>
               <label className="text-sm font-medium text-slate-700">Logo URL<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, logo: event.target.value })} value={settings.logo} /></label>
               <label className="flex items-center gap-3 text-sm"><input checked={settings.showSiteTitle !== false} onChange={(event) => setSettings({ ...settings, showSiteTitle: event.target.checked })} type="checkbox" /> Afiseaza titlul langa logo</label>
@@ -1385,6 +1403,9 @@ function App() {
               <label className="text-sm font-medium text-slate-700">Cost livrare per bucata in afara Iasi<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" min={0} onChange={(event) => setSettings({ ...settings, shippingCostPerItem: Number(event.target.value) })} type="number" value={settings.shippingCostPerItem} /></label>
               <label className="md:col-span-2 text-sm font-medium text-slate-700">Mesaj livrare gratuita<textarea className="mt-2 min-h-20 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, freeShippingMessage: event.target.value })} value={settings.freeShippingMessage} /></label>
               <label className="md:col-span-2 text-sm font-medium text-slate-700">Instructiuni transfer bancar<textarea className="mt-2 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, bankInstructions: event.target.value })} value={settings.bankInstructions} /></label>
+              <label className="text-sm font-medium text-slate-700">SEO title<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, seoTitle: event.target.value })} placeholder="Titlul care apare in Google" value={settings.seoTitle} /></label>
+              <label className="text-sm font-medium text-slate-700">SEO image URL<input className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, seoImage: event.target.value })} placeholder="Poza pentru share / preview" value={settings.seoImage} /></label>
+              <label className="md:col-span-2 text-sm font-medium text-slate-700">SEO description<textarea className="mt-2 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2" onChange={(event) => setSettings({ ...settings, seoDescription: event.target.value })} placeholder="Descriere pentru Google si preview-uri" value={settings.seoDescription} /></label>
             </div>
             <button className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-slate-950 px-4 py-3 font-semibold text-white">
               <Save className="size-4" aria-hidden="true" />

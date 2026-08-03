@@ -93,6 +93,7 @@ function withDefaults(db) {
   return {
     settings: {
       siteTitle: settings.siteTitle || 'DesignRiflaje',
+      siteUrl: settings.siteUrl || '',
       logo: settings.logo || '',
       showSiteTitle: settings.showSiteTitle !== false,
       heroTitle: settings.heroTitle || settings.siteTitle || 'DesignRiflaje',
@@ -109,6 +110,12 @@ function withDefaults(db) {
       bankInstructions: settings.bankInstructions || '',
       freeShippingMessage: settings.freeShippingMessage || 'Livrare gratuita in Iasi.',
       shippingCostPerItem: Number(settings.shippingCostPerItem ?? 10),
+      seoTitle: settings.seoTitle || settings.siteTitle || 'DesignRiflaje',
+      seoDescription:
+        settings.seoDescription ||
+        settings.heroDescription ||
+        'Magazin online pentru riflaje decorative premium.',
+      seoImage: settings.seoImage || settings.heroImage || settings.logo || '',
     },
     products: (db.products || []).map(normalizeProduct),
     collections: (db.collections || []).map(normalizeCollection),
@@ -972,6 +979,7 @@ app.put('/api/admin/settings', requireAdmin, async (req, res) => {
   const db = await readDb()
   db.settings = {
     siteTitle,
+    siteUrl: sanitize(req.body.siteUrl),
     logo: sanitize(req.body.logo),
     showSiteTitle: req.body.showSiteTitle !== false,
     heroTitle: sanitize(req.body.heroTitle) || siteTitle,
@@ -987,6 +995,12 @@ app.put('/api/admin/settings', requireAdmin, async (req, res) => {
     bankInstructions: sanitize(req.body.bankInstructions),
     freeShippingMessage: sanitize(req.body.freeShippingMessage),
     shippingCostPerItem,
+    seoTitle: sanitize(req.body.seoTitle) || siteTitle,
+    seoDescription: sanitize(req.body.seoDescription) || sanitize(req.body.heroDescription),
+    seoImage:
+      sanitize(req.body.seoImage) ||
+      sanitize(req.body.heroImage) ||
+      sanitize(req.body.logo),
   }
   await writeDb(db)
   res.json(db.settings)

@@ -101,6 +101,7 @@ Intra in admin panel, apoi:
 - vezi comenzile in sectiunea `Comenzi`
 - confirmi manual plata sau schimbi statusul comenzii
 - modifici `Titlu site`, `Logo URL`, vizibilitatea titlului, `Text principal`, slideshow-ul `Poze meniu principal`, `Email`, `Telefon`, `WhatsApp`, date bancare si costul livrarii din `Setari`
+- modifici `URL site public`, `SEO title`, `SEO description` si `SEO image URL` din `Setari` pentru titlul paginii, descrierea din rezultate si preview-urile cand linkul este distribuit
 - poti seta emailul public de contact in `Setari`; el poate fi folosit si ca destinatar implicit pentru notificari daca nu setezi `NOTIFICATION_EMAIL`
 
 Serverul salveaza modificarile in:
@@ -108,6 +109,12 @@ Serverul salveaza modificarile in:
 ```text
 server/data/db.json
 ```
+
+Atentie pentru productie pe Render Free:
+
+- fisierul `server/data/db.json` nu este stocare persistenta
+- dupa redeploy sau restart, modificarile pot disparea
+- pentru produse, comenzi si setari care raman salvate, foloseste o baza de date sau un disk persistent pe un plan compatibil
 
 ## Livrare si plata
 

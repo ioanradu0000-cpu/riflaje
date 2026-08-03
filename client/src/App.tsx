@@ -51,6 +51,7 @@ type Collection = {
 
 type Settings = {
   siteTitle: string
+  siteUrl: string
   logo: string
   showSiteTitle: boolean
   heroTitle: string
@@ -66,6 +67,9 @@ type Settings = {
   bankInstructions: string
   freeShippingMessage: string
   shippingCostPerItem: number
+  seoTitle: string
+  seoDescription: string
+  seoImage: string
 }
 
 type CartLine = {
@@ -110,6 +114,30 @@ const fallbackHeroImage =
 
 function getImageSet(primary: string, images: string[] | undefined) {
   return [...new Set([primary, ...(images || [])].map((image) => image?.trim()).filter(Boolean))]
+}
+
+function upsertMetaTag(attribute: 'name' | 'property', key: string, content: string) {
+  let element = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`)
+
+  if (!element) {
+    element = document.createElement('meta')
+    element.setAttribute(attribute, key)
+    document.head.appendChild(element)
+  }
+
+  element.setAttribute('content', content)
+}
+
+function upsertLinkTag(rel: string, href: string) {
+  let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
+
+  if (!element) {
+    element = document.createElement('link')
+    element.setAttribute('rel', rel)
+    document.head.appendChild(element)
+  }
+
+  element.setAttribute('href', href)
 }
 
 function normalizeZooms(zooms: number[] | undefined, count: number) {
@@ -609,6 +637,11 @@ function App() {
   const heroTitle = settings?.heroTitle || title
   const heroDescription =
     settings?.heroDescription || 'Riflaje profesionale pentru amenajari moderne.'
+  const seoTitle = settings?.seoTitle || title
+  const seoDescription =
+    settings?.seoDescription || heroDescription || 'Magazin online pentru riflaje decorative premium.'
+  const seoImage = settings?.seoImage || settings?.heroImage || settings?.logo || fallbackHeroImage
+  const siteUrl = settings?.siteUrl?.trim() || window.location.origin
   const heroImages = getImageSet(settings?.heroImage || fallbackHeroImage, settings?.heroImages)
   const contactHref = settings?.email ? `mailto:${settings.email}` : '#contact'
   const collectionById = useMemo(
@@ -617,6 +650,21 @@ function App() {
   )
   const selectedCollection = selectedCollectionId ? collectionById.get(selectedCollectionId) : null
   const selectedProduct = selectedProductId ? productById.get(selectedProductId) : null
+
+  useEffect(() => {
+    document.title = seoTitle
+    upsertMetaTag('name', 'description', seoDescription)
+    upsertMetaTag('property', 'og:title', seoTitle)
+    upsertMetaTag('property', 'og:description', seoDescription)
+    upsertMetaTag('property', 'og:type', 'website')
+    upsertMetaTag('property', 'og:url', siteUrl)
+    upsertMetaTag('property', 'og:image', seoImage)
+    upsertMetaTag('name', 'twitter:card', 'summary_large_image')
+    upsertMetaTag('name', 'twitter:title', seoTitle)
+    upsertMetaTag('name', 'twitter:description', seoDescription)
+    upsertMetaTag('name', 'twitter:image', seoImage)
+    upsertLinkTag('canonical', siteUrl)
+  }, [seoDescription, seoImage, seoTitle, siteUrl])
 
   function openCollection(collectionId: string) {
     setSelectedCollectionId(collectionId)
