@@ -53,7 +53,7 @@ Backendul poate trimite email automat pentru:
 - schimbare status comanda
 - schimbare status plata
 
-Configurare in `server/.env` sau in Render:
+Varianta 1: SMTP clasic, bun pentru local sau Render platit:
 
 ```bash
 SMTP_HOST=smtp.example.com
@@ -65,10 +65,21 @@ SMTP_FROM="DesignRiflaje <no-reply@example.com>"
 NOTIFICATION_EMAIL=comenzi@siteul-tau.ro
 ```
 
+Varianta 2: Resend API, recomandata pentru Render Free:
+
+```bash
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM="DesignRiflaje <onboarding@resend.dev>"
+NOTIFICATION_EMAIL=designriflaje@gmail.com
+```
+
 Observatii:
 
 - daca `NOTIFICATION_EMAIL` lipseste, se foloseste emailul setat in admin la `Setari`
-- daca SMTP nu este configurat, comenzile merg in continuare, dar nu se trimite niciun email
+- daca `RESEND_API_KEY` exista, backendul foloseste Resend prin HTTPS
+- daca `RESEND_API_KEY` lipseste, backendul incearca SMTP
+- daca nici Resend, nici SMTP nu sunt configurate corect, comenzile merg in continuare, dar nu se trimite niciun email
+- pe Render Free, conexiunile SMTP pe porturile `25`, `465` si `587` sunt blocate, deci Gmail SMTP nu va functiona acolo
 
 ## Cum modifici datele
 

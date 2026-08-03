@@ -47,6 +47,8 @@ const smtpSecure = process.env.SMTP_SECURE === 'true'
 const smtpUser = String(process.env.SMTP_USER || '').trim()
 const smtpPass = String(process.env.SMTP_PASS || '').trim()
 const smtpFrom = String(process.env.SMTP_FROM || '').trim()
+const resendApiKey = String(process.env.RESEND_API_KEY || '').trim()
+const resendFrom = String(process.env.RESEND_FROM || smtpFrom).trim()
 const notificationEmailEnv = String(process.env.NOTIFICATION_EMAIL || '').trim()
 const cookieSameSite =
   process.env.COOKIE_SAME_SITE || (process.env.NODE_ENV === 'production' ? 'none' : 'lax')
@@ -523,10 +525,43 @@ function orderSummaryHtml(order) {
 }
 
 async function sendAdminNotification(settings, subject, text, html) {
-  const transporter = getMailTransporter()
   const recipient = getNotificationRecipient(settings)
 
-  if (!transporter || !recipient) {
+  if (!recipient) {
+    return
+  }
+
+  if (resendApiKey && resendFrom) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [recipient],
+          subject,
+          text,
+          html,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorBody = await response.text()
+        console.error('Resend notification failed:', response.status, errorBody)
+      }
+    } catch (error) {
+      console.error('Resend notification failed:', error)
+    }
+
+    return
+  }
+
+  const transporter = getMailTransporter()
+
+  if (!transporter) {
     return
   }
 
@@ -573,6 +608,9 @@ function notifyPaymentStatusChanged(order, previousStatus, settings) {
 app.get('/health', (_req, res) => {
   res.json({ ok: true })
 })
+
+const emailMode = resendApiKey && resendFrom ? 'resend' : getMailTransporter() ? 'smtp' : 'disabled'
+console.log(`Email notifications mode: ${emailMode}`)
 
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   const username = sanitize(req.body.username)
