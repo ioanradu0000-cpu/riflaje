@@ -45,6 +45,31 @@ JWT_SECRET=secret_lung_random
 
 Frontendul admin nu contine parola hardcodata. Autentificarea foloseste cookie `httpOnly`.
 
+## Notificari email
+
+Backendul poate trimite email automat pentru:
+
+- comanda noua
+- schimbare status comanda
+- schimbare status plata
+
+Configurare in `server/.env` sau in Render:
+
+```bash
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=user@example.com
+SMTP_PASS=parola_smtp
+SMTP_FROM="DesignRiflaje <no-reply@example.com>"
+NOTIFICATION_EMAIL=comenzi@siteul-tau.ro
+```
+
+Observatii:
+
+- daca `NOTIFICATION_EMAIL` lipseste, se foloseste emailul setat in admin la `Setari`
+- daca SMTP nu este configurat, comenzile merg in continuare, dar nu se trimite niciun email
+
 ## Cum modifici datele
 
 Nu trebuie sa editezi codul pentru produse, preturi sau contact.
@@ -65,6 +90,7 @@ Intra in admin panel, apoi:
 - vezi comenzile in sectiunea `Comenzi`
 - confirmi manual plata sau schimbi statusul comenzii
 - modifici `Titlu site`, `Logo URL`, vizibilitatea titlului, `Text principal`, slideshow-ul `Poze meniu principal`, `Email`, `Telefon`, `WhatsApp`, date bancare si costul livrarii din `Setari`
+- poti seta emailul public de contact in `Setari`; el poate fi folosit si ca destinatar implicit pentru notificari daca nu setezi `NOTIFICATION_EMAIL`
 
 Serverul salveaza modificarile in:
 

@@ -5,6 +5,7 @@ import cors from 'cors'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
 import jwt from 'jsonwebtoken'
+import nodemailer from 'nodemailer'
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -40,10 +41,18 @@ const configuredOrigins = String(process.env.CORS_ORIGINS || '')
   .map((origin) => origin.trim())
   .filter(Boolean)
 const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])]
+const smtpHost = String(process.env.SMTP_HOST || '').trim()
+const smtpPort = Number(process.env.SMTP_PORT || 587)
+const smtpSecure = process.env.SMTP_SECURE === 'true'
+const smtpUser = String(process.env.SMTP_USER || '').trim()
+const smtpPass = String(process.env.SMTP_PASS || '').trim()
+const smtpFrom = String(process.env.SMTP_FROM || '').trim()
+const notificationEmailEnv = String(process.env.NOTIFICATION_EMAIL || '').trim()
 const cookieSameSite =
   process.env.COOKIE_SAME_SITE || (process.env.NODE_ENV === 'production' ? 'none' : 'lax')
 const cookieSecure =
   process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production'
+let mailTransporter = null
 
 app.use(
   cors({
@@ -417,6 +426,150 @@ function createOrderNumber() {
   return `DR-${date}-${now.getTime().toString().slice(-6)}`
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function getMailTransporter() {
+  if (!smtpHost || !smtpPort || !smtpFrom) {
+    return null
+  }
+
+  if (!mailTransporter) {
+    mailTransporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
+      auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+    })
+  }
+
+  return mailTransporter
+}
+
+function getNotificationRecipient(settings) {
+  return notificationEmailEnv || sanitize(settings?.email)
+}
+
+function formatOrderItemsText(order) {
+  return order.items
+    .map((item) => `- ${item.title} x ${item.quantity} | ${item.unitPrice} | ${item.subtotal}`)
+    .join('\n')
+}
+
+function formatOrderItemsHtml(order) {
+  return order.items
+    .map(
+      (item) =>
+        `<li><strong>${escapeHtml(item.title)}</strong> x ${item.quantity} | ${escapeHtml(item.unitPrice)} | ${escapeHtml(item.subtotal)}</li>`,
+    )
+    .join('')
+}
+
+function orderSummaryText(order) {
+  return [
+    `Comanda: ${order.orderNumber}`,
+    `Data: ${new Date(order.createdAt).toLocaleString('ro-RO')}`,
+    '',
+    'Client:',
+    `- Nume: ${order.customer.fullName}`,
+    `- Telefon: ${order.customer.phone}`,
+    `- Judet: ${order.customer.county}`,
+    `- Localitate: ${order.customer.locality}`,
+    `- Adresa: ${order.customer.address}`,
+    order.customer.postalCode ? `- Cod postal: ${order.customer.postalCode}` : '',
+    order.customer.notes ? `- Observatii: ${order.customer.notes}` : '',
+    '',
+    'Produse:',
+    formatOrderItemsText(order),
+    '',
+    `Subtotal: ${order.subtotal}`,
+    `Livrare: ${order.shipping}`,
+    `Total: ${order.total}`,
+    `Status comanda: ${order.orderStatus}`,
+    `Status plata: ${order.paymentStatus}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+function orderSummaryHtml(order) {
+  return `
+    <h2>Comanda ${escapeHtml(order.orderNumber)}</h2>
+    <p><strong>Data:</strong> ${escapeHtml(new Date(order.createdAt).toLocaleString('ro-RO'))}</p>
+    <h3>Client</h3>
+    <ul>
+      <li><strong>Nume:</strong> ${escapeHtml(order.customer.fullName)}</li>
+      <li><strong>Telefon:</strong> ${escapeHtml(order.customer.phone)}</li>
+      <li><strong>Judet:</strong> ${escapeHtml(order.customer.county)}</li>
+      <li><strong>Localitate:</strong> ${escapeHtml(order.customer.locality)}</li>
+      <li><strong>Adresa:</strong> ${escapeHtml(order.customer.address)}</li>
+      ${order.customer.postalCode ? `<li><strong>Cod postal:</strong> ${escapeHtml(order.customer.postalCode)}</li>` : ''}
+      ${order.customer.notes ? `<li><strong>Observatii:</strong> ${escapeHtml(order.customer.notes)}</li>` : ''}
+    </ul>
+    <h3>Produse</h3>
+    <ul>${formatOrderItemsHtml(order)}</ul>
+    <p><strong>Subtotal:</strong> ${escapeHtml(order.subtotal)}</p>
+    <p><strong>Livrare:</strong> ${escapeHtml(order.shipping)}</p>
+    <p><strong>Total:</strong> ${escapeHtml(order.total)}</p>
+    <p><strong>Status comanda:</strong> ${escapeHtml(order.orderStatus)}</p>
+    <p><strong>Status plata:</strong> ${escapeHtml(order.paymentStatus)}</p>
+  `
+}
+
+async function sendAdminNotification(settings, subject, text, html) {
+  const transporter = getMailTransporter()
+  const recipient = getNotificationRecipient(settings)
+
+  if (!transporter || !recipient) {
+    return
+  }
+
+  try {
+    await transporter.sendMail({
+      from: smtpFrom,
+      to: recipient,
+      subject,
+      text,
+      html,
+    })
+  } catch (error) {
+    console.error('Email notification failed:', error)
+  }
+}
+
+function notifyOrderCreated(order, settings) {
+  return sendAdminNotification(
+    settings,
+    `[DesignRiflaje] Comanda noua ${order.orderNumber}`,
+    `Ai primit o comanda noua.\n\n${orderSummaryText(order)}`,
+    `<p>Ai primit o comanda noua.</p>${orderSummaryHtml(order)}`,
+  )
+}
+
+function notifyOrderStatusChanged(order, previousStatus, settings) {
+  return sendAdminNotification(
+    settings,
+    `[DesignRiflaje] Status comanda actualizat ${order.orderNumber}`,
+    `Statusul comenzii s-a schimbat din "${previousStatus}" in "${order.orderStatus}".\n\n${orderSummaryText(order)}`,
+    `<p>Statusul comenzii s-a schimbat din <strong>${escapeHtml(previousStatus)}</strong> in <strong>${escapeHtml(order.orderStatus)}</strong>.</p>${orderSummaryHtml(order)}`,
+  )
+}
+
+function notifyPaymentStatusChanged(order, previousStatus, settings) {
+  return sendAdminNotification(
+    settings,
+    `[DesignRiflaje] Status plata actualizat ${order.orderNumber}`,
+    `Statusul platii s-a schimbat din "${previousStatus}" in "${order.paymentStatus}".\n\n${orderSummaryText(order)}`,
+    `<p>Statusul platii s-a schimbat din <strong>${escapeHtml(previousStatus)}</strong> in <strong>${escapeHtml(order.paymentStatus)}</strong>.</p>${orderSummaryHtml(order)}`,
+  )
+}
+
 app.get('/health', (_req, res) => {
   res.json({ ok: true })
 })
@@ -666,6 +819,7 @@ app.post('/api/orders', async (req, res) => {
 
     db.orders.unshift(order)
     await writeDb(db)
+    await notifyOrderCreated(order, db.settings)
     res.status(201).json({ order, bank: publicSettings(db.settings) })
   } catch (error) {
     res.status(400).json({ message: error.message || 'Comanda nu a putut fi salvata.' })
@@ -723,9 +877,13 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
     return res.status(404).json({ message: 'Comanda nu exista.' })
   }
 
+  const previousStatus = order.orderStatus
   order.orderStatus = status
   order.internalNotes = sanitize(req.body.internalNotes ?? order.internalNotes)
   await writeDb(db)
+  if (previousStatus !== status) {
+    await notifyOrderStatusChanged(order, previousStatus, db.settings)
+  }
   res.json(order)
 })
 
@@ -743,9 +901,13 @@ app.put('/api/admin/orders/:id/payment-status', requireAdmin, async (req, res) =
     return res.status(404).json({ message: 'Comanda nu exista.' })
   }
 
+  const previousStatus = order.paymentStatus
   order.paymentStatus = status
   order.internalNotes = sanitize(req.body.internalNotes ?? order.internalNotes)
   await writeDb(db)
+  if (previousStatus !== status) {
+    await notifyPaymentStatusChanged(order, previousStatus, db.settings)
+  }
   res.json(order)
 })
 
